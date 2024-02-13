@@ -5,22 +5,18 @@ by authors Charlotte Meinke, Kevin Hilbert & Silvan Hornstein
 """
 
 # %% Import packages
-from library.Organizing import create_folders_to_save_results
-from library.Evaluating import calc_modelperformance_metrics, ev_PAI
-from library.Preprocessing import FeatureSelector, ZScalerDimVars
-from library.Imputing import MiceModeImputer_pipe
 import pickle
 import os
 import sys
 import time
 from multiprocessing import Pool
 
-#import sklearn
+import sklearn
 
-#import numpy as np
+import numpy as np
 from collections import Counter
-#import pandas as pd
-#from pandas import read_csv
+import pandas as pd
+from pandas import read_csv
 from sklearn.feature_selection import SelectFromModel
 from sklearn.linear_model import ElasticNet, Ridge, ElasticNetCV, RidgeCV
 from sklearn.ensemble import RandomForestRegressor
@@ -30,15 +26,17 @@ import argparse
 
 # Add the project root to the Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from library.Organizing import create_folder_to_save_results
+from library.Evaluating import calc_modelperformance_metrics, ev_PAI
+from library.Preprocessing import FeatureSelector, ZScalerDimVars
+from library.Imputing import MiceModeImputer_pipe
 
 # %% Generell settings
-
-
-def set_paths_and_options(PATH_INPUT_DATA, INPUT_DATA_NAME, CLASSIFIER, HP_TUNING="False"):
+def set_paths_and_options(PATH_INPUT_DATA, INPUT_DATA_NAME, PATH_RESULTS_BASE, CLASSIFIER, HP_TUNING="False"):
     """ Set paths for input data and results and set options"""
     OPTIONS = {}
     OPTIONS['number_folds'] = 5
-    OPTIONS["number_repeats"] = 100
+    OPTIONS["number_repeats"] = 1
     OPTIONS['name_features'] = 'features.txt'
     OPTIONS['name_labels'] = 'labels.txt'
     OPTIONS['name_groups_id'] = 'groups_test.txt'
@@ -47,14 +45,11 @@ def set_paths_and_options(PATH_INPUT_DATA, INPUT_DATA_NAME, CLASSIFIER, HP_TUNIN
     OPTIONS["hp_tuning"] = HP_TUNING
 
     # Generate PATH_RESULTS
-    PATH_RESULTS_BASE = "Y:\\PsyThera\\Projekte_Meinke\\PAI_Personalized_Advantage_Index\\Results_PAI_Test\\PROTECT_AD_function"
     if OPTIONS["hp_tuning"] == "True":
-        model_name = "final" + "_" + CLASSIFIER + "_" + \
-            INPUT_DATA_NAME + "_" + "hp_tuned_grid"
+        model_name = "final" + "_" + CLASSIFIER + "_" + "hp_tuned_grid"
     else:
-        model_name = "final" + "_" + CLASSIFIER + \
-            "_" + INPUT_DATA_NAME
-    PATH_RESULTS = os.path.join(PATH_RESULTS_BASE, model_name)
+        model_name = "final" + "_" + CLASSIFIER
+    PATH_RESULTS = os.path.join(PATH_RESULTS_BASE, INPUT_DATA_NAME, model_name)
     PATH_RESULTS_PLOTS = os.path.join(PATH_RESULTS, "plots")
 
     return PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS
@@ -513,11 +508,13 @@ def summarize_features(outcomes, key_feat_names, key_feat_weights):
 # %% Run main script
 if __name__ == '__main__':
 
-    path_panik = "Z:\\PsyThera\\Projekte_Meinke\\PAI_Personalized_Advantage_Index\\4_Analysis_CM\Datenaufbereitung_Panik\\no_one_hot"
+    path_panik = "Y:\\PsyThera\\Projekte_Meinke\\PAI_Personalized_Advantage_Index\\4_Analysis_CM\Datenaufbereitung_Panik\\no_one_hot"
+    path_results_base = "Y:\\PsyThera\\Projekte_Meinke\\PAI_Personalized_Advantage_Index\\Results_PAI_Test"
     # Run script via IDE (start)
     PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(
         PATH_INPUT_DATA=path_panik,
-        INPUT_DATA_NAME="PANIK",
+        INPUT_DATA_NAME="PANIK_TEST2",
+        PATH_RESULTS_BASE = path_results_base,
         CLASSIFIER="ridge_regression",  # ridge_regression OR random_forest
         HP_TUNING="False")
     # Run script via IDE (end)
@@ -529,6 +526,8 @@ if __name__ == '__main__':
     #                     help='Path to input data')
     # parser.add_argument('--INPUT_DATA_NAME', type=str,
     #                     help='Name of input dataset')
+    # parser.add_argument('--PATH_RESULTS_BASE', type=str,
+    #                     help='Path to save results')
     # parser.add_argument('--CLASSIFIER', type=str,
     #                     help='Classifier to use, set ridge_regression or random_forest')
     # parser.add_argument('--HP_TUNING', type=str,
@@ -536,22 +535,21 @@ if __name__ == '__main__':
     # args = parser.parse_args()
 
     # PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(PATH_INPUT_DATA=args.PATH_INPUT_DATA,
-    #                                                                                    INPUT_DATA_NAME=args.INPUT_DATA_NAME,
-    #                                                                                    CLASSIFIER=args.CLASSIFIER,
-    #                                                                                    HP_TUNING=args.HP_TUNING)
+    #                                                                                     INPUT_DATA_NAME=args.INPUT_DATA_NAME,
+    #                                                                                     PATH_RESULTS_BASE=args.PATH_RESULTS_BASE,
+    #                                                                                     CLASSIFIER=args.CLASSIFIER,
+    #                                                                                     HP_TUNING=args.HP_TUNING)
     # Run script via terminal (end)
 
     # Set-up
-    create_folders_to_save_results(PATH_RESULTS)
-    create_folders_to_save_results(PATH_RESULTS_PLOTS)
+    create_folder_to_save_results(PATH_RESULTS)
+    create_folder_to_save_results(PATH_RESULTS_PLOTS)
     start_time = time.time()
     print('\nThe scikit-learn version is {}.'.format(sklearn.__version__))
 
     # Perform splitting stratified by treatment group
-    name_groups_id_import_path = os.path.join(
-        PATH_INPUT_DATA, OPTIONS['name_groups_id'])
-    name_groups_id_import = read_csv(
-        name_groups_id_import_path, sep="\t", header=0)
+    name_groups_id_import_path = os.path.join(PATH_INPUT_DATA, OPTIONS['name_groups_id'])
+    name_groups_id_import = read_csv(name_groups_id_import_path, sep="\t", header=0)
     y = np.array(name_groups_id_import)
     sfk = RepeatedStratifiedKFold(n_splits=OPTIONS['number_folds'],
                                   n_repeats=OPTIONS["number_repeats"],

@@ -6,10 +6,10 @@ Created on Thu Dec  7 17:08:02 2023
 """
 # %% Import packages
 import numpy as np
+from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import SimpleImputer, IterativeImputer
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.linear_model import BayesianRidge
-from sklearn.experimental import enable_iterative_imputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import Pipeline

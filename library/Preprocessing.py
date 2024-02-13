@@ -54,11 +54,12 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
       Returns the instance itself.
     """
 
-    def __init__(self):
+    def __init__(self, cor_threshold = 0.75):
         self.is_feat_excluded = None
         self.background_info = None
+        self.cor_threshold = cor_threshold
 
-    def fit(self, X, cor_threshold=0.75, y=None):
+    def fit(self, X, y=None):
         X_feat_indices = np.arange(X.shape[1])
         # Throw error if X has missing values
         if np.isnan(X).any():
@@ -66,7 +67,6 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
                 "Input array X contains missing values. Remove or impute missings before using this FeatureSelector")
 
         # Step 1: Exclusion based on variance and least common category
-        self.cor_threshold = cor_threshold
         self.is_feat_excluded = np.zeros(X.shape[1], dtype=int)
         self.background_info = np.full([X.shape[1], 2], np.nan)
 
@@ -109,7 +109,7 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
             max_corr_idx = np.unravel_index(
                 np.nanargmax(np.abs(corr_mat)), corr_mat.shape)
 
-            if max_corr > self.cor_treshold:
+            if max_corr > self.cor_threshold:
                 if mean_corr[max_corr_idx[0]] > mean_corr[max_corr_idx[1]]:
                     feat_highest_mean_idx = max_corr_idx[0]
                 else:

@@ -10,8 +10,6 @@ import sys
 import os
 
 # %%
-
-
 def create_folder_to_save_results(PATH_RESULTS):
     """
     Create folder to save results
