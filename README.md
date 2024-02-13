@@ -5,15 +5,18 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
 # Prepare the Script
 
 1. Clone the repository
-2. Make sure all needed requirements for this script are installed. 
+2. Make sure all needed requirements for this script are installed.
+
+   a) Manually
+       You only need three additional packages (numpy, pandas, scikit). Install them manually if you have not installed them yet.
     
-    a) For conda-users, run:
+    b) Automatically for conda-users, run in the terminal:
     
     ```python
-    
+    conda env create -f "YOUR_PATH_TO_THE_ENVIRONMENT\Environment.yaml"
     ```
     
-     b) For non-conda-users, run:
+    c) Automatically for non-conda-users, run in the terminal:
     
     ```python
      pip install -r "requirements.txt".
