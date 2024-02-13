@@ -5,21 +5,22 @@ by authors Charlotte Meinke, Kevin Hilbert & Silvan Hornstein
 """
 
 # %% Import packages
-
-import pickle
 from library.Organizing import create_folders_to_save_results
 from library.Evaluating import calc_modelperformance_metrics, ev_PAI
 from library.Preprocessing import FeatureSelector, ZScalerDimVars
 from library.Imputing import MiceModeImputer_pipe
-import multiprocessing
+import pickle
 import os
 import sys
-import sklearn
 import time
 from multiprocessing import Pool
-import numpy as np
-import pandas as pd
-from pandas import read_csv
+
+#import sklearn
+
+#import numpy as np
+from collections import Counter
+#import pandas as pd
+#from pandas import read_csv
 from sklearn.feature_selection import SelectFromModel
 from sklearn.linear_model import ElasticNet, Ridge, ElasticNetCV, RidgeCV
 from sklearn.ensemble import RandomForestRegressor
@@ -29,50 +30,6 @@ import argparse
 
 # Add the project root to the Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-
-"""
-How to use this script
-
-Data preparation:
-
-    Define a working directory and met this wunder path_workingdirectory
-
-    Prepare the data: this script takes tab-delimited text files as input for features, labels and group membership (i.e. treatment arm). Usually, tab-delimited text can easily be exported from statistic programs or excel
-    Make sure that the group membership file codes the groups as number, for instance 0 for CBT and 1 for SSRI
-    Make sure that categorical variables are one-hot encoded as binaries, and these binaries are scaled to 0.5 and -0.5
-
-    Make sure the data in these text files uses a point as decimal separator and variable names do not include special characters
-    The script assumes that all text files include the variable name in the top line
-    Save the feature, label and group data in a subfolder 'data' under your working directory
-
-    Missing Values: this script uses MICE to impute missing for dimensional features and mode imputation for binary features. Consequently, missings must be differentially coded depending on type. Please code a missing dimensional value as 999999 and a missing binary value as 777777
-
-
-Script preparation:
-    Name your model in OPTIONS['name_model'] - this will be used to name all outputs by the script
-    Set the number of total iterations under OPTIONS['number_iterations']
-    Set the of folds for the k-fold under OPTIONS['number_folds']
-    Give the names of your text files including features, labels and group membership under OPTIONS['name_features'], OPTIONS['name_labels'] , OPTIONS['name_groups_id']
-    Use map or pool.map at the end of the script depending on whether you run this on your local computer or on a cluster
-"""
-
-
-"""
-Empirical and theoretical foundations of design choices
-
-There are plenty of different options for preparing the data and the machine learning pipeline. Mostly, no clear data is available suggesting which approches are superior to others. Still, there were some papers that we considered important when designing this pipeline, which are presented below:
-
-Centering of variables and centering of binary variables to -0.5 and 0.5 -- Kraemer & Blasey (2004). Centring in regression analyses: a strategy to prevent errors in statistical inference. Int J Methods Psychiatr Res, 13(3), 141-51.
-Elastic net feature reduction -- Bennemann et al. (2022). Predicting patients who will drop out of out-patient psychotherapy using machine learning algorithms. The British Journal of Psychiatry, 220, 192–201
-Random Forest -- Grinsztajn et al (preprint). Why do tree-based models still outperform deep learning on tabular data? arXiv, 2207.08815.
-Refraining from LOO-CV and using a repeated 5-fold stratified train-test split -- Varoquaux (2018). Cross-validation failure: Small sample sizes lead to large error bars. Neuroimage, 180(A), 68-77.
-     & Varoquaux et al. (2017). Assessing and tuning brain decoders: Cross-validation, caveats, and guidelines. NeuroImage, 145, 166–179.
-     & Flint et al. (2021). Systematic misestimation of machine learning performance in neuroimaging studies of depression. Neuropsychopharmacology, 46, 1510–1517.
-     & the observation that prediction performance varies substantially between iterations in our own previous papers, including
-     Leehr et al. (2021). Clinical predictors of treatment response towards exposure therapy in virtuo in spider phobia: a machine 	learning and external cross-validation approach. Journal of Anxiety Disorders, 83, 102448.
-     & Hilbert et al. (2021). Identifying CBT non-response among OCD outpatients: a machine-learning approach. Psychotherapy Research, 31(1), 52-62.
-"""
 
 # %% Generell settings
 
@@ -84,7 +41,7 @@ def set_paths_and_options(PATH_INPUT_DATA, INPUT_DATA_NAME, CLASSIFIER, HP_TUNIN
     OPTIONS["number_repeats"] = 100
     OPTIONS['name_features'] = 'features.txt'
     OPTIONS['name_labels'] = 'labels.txt'
-    OPTIONS['name_groups_id'] = 'groups.txt'
+    OPTIONS['name_groups_id'] = 'groups_test.txt'
 
     OPTIONS["classifier"] = CLASSIFIER
     OPTIONS["hp_tuning"] = HP_TUNING
@@ -127,10 +84,9 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, OPTIONS):
     labels_import_path = os.path.join(PATH_INPUT_DATA, OPTIONS['name_labels'])
     name_groups_id_import_path = os.path.join(
         PATH_INPUT_DATA, OPTIONS['name_groups_id'])
-    features_import = read_csv(
-        features_import_path, sep="\t", header=0, na_values=["999", "777"])
-    labels_import = read_csv(labels_import_path, sep="\t", header=0)
 
+    features_import = read_csv(features_import_path, sep="\t", header=0)
+    labels_import = read_csv(labels_import_path, sep="\t", header=0)
     # Sanity check
     # features_import["outcome"] = labels_import
     name_groups_id_import = read_csv(
@@ -165,7 +121,11 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, OPTIONS):
     # For each treatment, train a model on those patients in the training set
     # who have received the treatment ( = factual data)
     # Initialize empty dictionaries to save information per treatment
-    info_per_treat = {"treatment_A": {"label": 0}, "treatment_B": {"label": 1}}
+    # Treatment A is always the more frequent one
+    counts_groups = Counter(groups)
+    group_labels = sorted(counts_groups, key=counts_groups.get, reverse=True)
+    info_per_treat = {"treatment_A": {
+        "label": group_labels[0]}, "treatment_B": {"label": group_labels[1]}}
 
     for treatment in info_per_treat:
 
@@ -228,7 +188,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, OPTIONS):
                 # Add to info_per_treament
                 info_per_treat[treatment]["background_ridge_hp"] = background_hp_tuning_ridge
                 clf = grid_ridge.best_estimator_
-                #clf = RidgeCV(fit_intercept = False)
+                # clf = RidgeCV(fit_intercept = False)
             else:
                 clf = Ridge(fit_intercept=False)
             clf.fit(X_train_scaled_selected_factual, y_train)
@@ -549,44 +509,37 @@ def summarize_features(outcomes, key_feat_names, key_feat_weights):
 
     return feat_sum_df
 
-# %%
-
-
-def reminder():
-    print("Are data read-in as tab-separated text?")
-    print("Have the values 777777, 999999 been assigned to NAs / missing?")
-    print("Have you provided the paths to directories?"),
-    print("Are binaries coded as 0.5, -0.5?")
-    print("Is group membership coded as 0, 1?")
-    input("Press Enter to continue...")
-
 
 # %% Run main script
 if __name__ == '__main__':
-    # reminder()
 
-    # path_panik = "Y:\\PsyThera\\Projekte_Meinke\\PAI_Personalized_Advantage_Index\\4_Analysis_CM\Datenaufbereitung_Panik"
-    # PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(
-    #                                                     PATH_INPUT_DATA = path_panik,
-    #                                                     INPUT_DATA_NAME = "PANIK",
-    #                                                     CLASSIFIER = "ridge_regression", # ridge_regression OR random_forest
-    #                                                     HP_TUNING = "False")
-    parser = argparse.ArgumentParser(
-        description='Advanced script to calculate the PAI')
-    parser.add_argument('--PATH_INPUT_DATA', type=str,
-                        help='Path to input data')
-    parser.add_argument('--INPUT_DATA_NAME', type=str,
-                        help='Name of input dataset')
-    parser.add_argument('--CLASSIFIER', type=str,
-                        help='Classifier to use, set ridge_regression or random_forest')
-    parser.add_argument('--HP_TUNING', type=str,
-                        help='Should hyperparameter tuning be applied? Set False or True')
-    args = parser.parse_args()
+    path_panik = "Z:\\PsyThera\\Projekte_Meinke\\PAI_Personalized_Advantage_Index\\4_Analysis_CM\Datenaufbereitung_Panik\\no_one_hot"
+    # Run script via IDE (start)
+    PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(
+        PATH_INPUT_DATA=path_panik,
+        INPUT_DATA_NAME="PANIK",
+        CLASSIFIER="ridge_regression",  # ridge_regression OR random_forest
+        HP_TUNING="False")
+    # Run script via IDE (end)
 
-    PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(PATH_INPUT_DATA=args.PATH_INPUT_DATA,
-                                                                                       INPUT_DATA_NAME=args.INPUT_DATA_NAME,
-                                                                                       CLASSIFIER=args.CLASSIFIER,
-                                                                                       HP_TUNING=args.HP_TUNING)
+    # Run script via terminal (start)
+    # parser = argparse.ArgumentParser(
+    #     description='Advanced script to calculate the PAI')
+    # parser.add_argument('--PATH_INPUT_DATA', type=str,
+    #                     help='Path to input data')
+    # parser.add_argument('--INPUT_DATA_NAME', type=str,
+    #                     help='Name of input dataset')
+    # parser.add_argument('--CLASSIFIER', type=str,
+    #                     help='Classifier to use, set ridge_regression or random_forest')
+    # parser.add_argument('--HP_TUNING', type=str,
+    #                     help='Should hyperparameter tuning be applied? Set False or True')
+    # args = parser.parse_args()
+
+    # PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(PATH_INPUT_DATA=args.PATH_INPUT_DATA,
+    #                                                                                    INPUT_DATA_NAME=args.INPUT_DATA_NAME,
+    #                                                                                    CLASSIFIER=args.CLASSIFIER,
+    #                                                                                    HP_TUNING=args.HP_TUNING)
+    # Run script via terminal (end)
 
     # Set-up
     create_folders_to_save_results(PATH_RESULTS)
