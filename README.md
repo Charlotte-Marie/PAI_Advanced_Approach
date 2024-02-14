@@ -29,6 +29,7 @@ There are two ways to run the script. In both ways, the following arguments need
 
 - PATH_INPUT_DATA → The path to the folder which contains features.txt, labels.txt, and groups.txt
 - INPUT_DATA_NAME → Name of input data or more general string that will be part of the name of the results folder
+- RESULTS_PATH_BASE -> Path to store the results folder
 - CLASSIFIER → Choose ridge_regression OR random_forest
 - HP_TUNING → Choose True OR False
 
@@ -61,13 +62,15 @@ Main_PAI_advanced_approach.py --PATH_INPUT_DATA *Your_path -*-INPUT_DATA_NAME *Y
 1. Make sure that the section for running the script via terminal is commented
 
 ```python
-		# Run script via terminal (start)
+    # Run script via terminal (start)
     # parser = argparse.ArgumentParser(
     #     description='Advanced script to calculate the PAI')
     # parser.add_argument('--PATH_INPUT_DATA', type=str,
     #                     help='Path to input data')
     # parser.add_argument('--INPUT_DATA_NAME', type=str,
     #                     help='Name of input dataset')
+    # parser.add_argument('--PATH_RESULTS_BASE', type=str,
+    #                     help='Path to save results')
     # parser.add_argument('--CLASSIFIER', type=str,
     #                     help='Classifier to use, set ridge_regression or random_forest')
     # parser.add_argument('--HP_TUNING', type=str,
@@ -75,9 +78,10 @@ Main_PAI_advanced_approach.py --PATH_INPUT_DATA *Your_path -*-INPUT_DATA_NAME *Y
     # args = parser.parse_args()
 
     # PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(PATH_INPUT_DATA=args.PATH_INPUT_DATA,
-    #                                                                                    INPUT_DATA_NAME=args.INPUT_DATA_NAME,
-    #                                                                                    CLASSIFIER=args.CLASSIFIER,
-    #                                                                                    HP_TUNING=args.HP_TUNING)
+    #                                                                                     INPUT_DATA_NAME=args.INPUT_DATA_NAME,
+    #                                                                                     PATH_RESULTS_BASE=args.PATH_RESULTS_BASE,
+    #                                                                                     CLASSIFIER=args.CLASSIFIER,
+    #                                                                                     HP_TUNING=args.HP_TUNING)
     # Run script via terminal (end)
 ```
 
@@ -85,10 +89,11 @@ Main_PAI_advanced_approach.py --PATH_INPUT_DATA *Your_path -*-INPUT_DATA_NAME *Y
 
 ```python
  PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(
-         PATH_INPUT_DATA= "Your_path",
-         INPUT_DATA_NAME="Your_name",
-         CLASSIFIER="ridge_regression",  # ridge_regression OR random_forest
-         HP_TUNING="False") # True or False
+        PATH_INPUT_DATA= YOUR_PATH,
+        INPUT_DATA_NAME= YOUR_NAME,
+        PATH_RESULTS_BASE = YOUR_PATH,
+        CLASSIFIER="ridge_regression",  # ridge_regression OR random_forest
+        HP_TUNING="False")
 ```
 
 3. Run the script
