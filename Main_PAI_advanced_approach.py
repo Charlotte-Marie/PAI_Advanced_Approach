@@ -32,27 +32,28 @@ from library.Preprocessing import FeatureSelector, ZScalerDimVars
 from library.Imputing import MiceModeImputer_pipe
 
 # %% Generell settings
-def set_paths_and_options(PATH_INPUT_DATA, INPUT_DATA_NAME, PATH_RESULTS_BASE, CLASSIFIER, HP_TUNING="False"):
-    """ Set paths for input data and results and set options"""
+def set_options(classifier, number_folds = 5, number_repeats = 100, hp_tuning = "False"):
+    """ Set options """
     OPTIONS = {}
-    OPTIONS['number_folds'] = 5
-    OPTIONS["number_repeats"] = 1
-    OPTIONS['name_features'] = 'features.txt'
-    OPTIONS['name_labels'] = 'labels.txt'
-    OPTIONS['name_groups_id'] = 'groups_test.txt'
+    OPTIONS['number_folds'] = number_folds
+    OPTIONS["number_repeats"] = number_repeats
+    OPTIONS["classifier"] = classifier
+    OPTIONS["hp_tuning"] = hp_tuning
+    
+    return OPTIONS
 
-    OPTIONS["classifier"] = CLASSIFIER
-    OPTIONS["hp_tuning"] = HP_TUNING
-
+def generate_and_create_results_path(path_results_base,input_data_name,OPTIONS):
     # Generate PATH_RESULTS
     if OPTIONS["hp_tuning"] == "True":
-        model_name = "final" + "_" + CLASSIFIER + "_" + "hp_tuned_grid"
+        model_name = "final" + "_" + OPTIONS["classifier"] + "_" + "hp_tuned_grid"
     else:
-        model_name = "final" + "_" + CLASSIFIER
-    PATH_RESULTS = os.path.join(PATH_RESULTS_BASE, INPUT_DATA_NAME, model_name)
+        model_name = "final" + "_" +  OPTIONS["classifier"]
+    PATH_RESULTS = os.path.join(path_results_base, input_data_name, model_name)
     PATH_RESULTS_PLOTS = os.path.join(PATH_RESULTS, "plots")
+    create_folder_to_save_results(PATH_RESULTS)
+    create_folder_to_save_results(PATH_RESULTS_PLOTS)
 
-    return PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS
+    return PATH_RESULTS
 
 
 # %% Procedure for one iteration/split in the repeated stratified cross-validation
@@ -74,18 +75,16 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, OPTIONS):
     random_state_seed = 0
 
     # Load dataset
-    features_import_path = os.path.join(
-        PATH_INPUT_DATA, OPTIONS['name_features'])
-    labels_import_path = os.path.join(PATH_INPUT_DATA, OPTIONS['name_labels'])
-    name_groups_id_import_path = os.path.join(
-        PATH_INPUT_DATA, OPTIONS['name_groups_id'])
+    features_import_path = os.path.join(PATH_INPUT_DATA, "features.txt")
+    labels_import_path = os.path.join(PATH_INPUT_DATA, "labels.txt")
+    groups_import_path = os.path.join(PATH_INPUT_DATA, "groups.txt")
 
     features_import = read_csv(features_import_path, sep="\t", header=0)
     labels_import = read_csv(labels_import_path, sep="\t", header=0)
     # Sanity check
     # features_import["outcome"] = labels_import
     name_groups_id_import = read_csv(
-        name_groups_id_import_path, sep="\t", header=0)
+        groups_import_path, sep="\t", header=0)
     groups = np.ravel(np.array(name_groups_id_import))
     y = np.array(labels_import)
     X_df = features_import
@@ -276,7 +275,6 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, OPTIONS):
 
 # %% Functions summarizing the results across iterations or repetitions of the k-fold cross-validation
 
-
 def calc_PAI_metrics_across_reps(outcomes, key_PAI_df, n_folds):
     """
     Calculate PAI metrics across repetitions of k-fold cross-validation.
@@ -305,6 +303,8 @@ def calc_PAI_metrics_across_reps(outcomes, key_PAI_df, n_folds):
     results_PAI_50_perc = []
     results_PAI_treat_A = []
     results_PAI_treat_B = []
+    
+    PATH_RESULTS_PLOTS = os.path.join(PATH_RESULTS,"plots")
 
     # Collect outcomes per repetition
     outcomes_all_repeats = [outcomes[i:i+n_folds]
@@ -316,7 +316,9 @@ def calc_PAI_metrics_across_reps(outcomes, key_PAI_df, n_folds):
 
         # Calculate Cohens d and absolute PAI for all PAIs
         results_PAI_all.append(ev_PAI(
-            y_true_PAI_all_folds, plot_path=PATH_RESULTS_PLOTS, suffix=f"{repeat}_all"))
+            y_true_PAI_all_folds, 
+            plot_path=os.path.join(PATH_RESULTS,"plots"), 
+            suffix=f"{repeat}_all"))
 
         # Calculate Cohens d for 50 percent highest PAIs
         median = np.median(abs(y_true_PAI_all_folds["PAI"]))
@@ -507,50 +509,59 @@ def summarize_features(outcomes, key_feat_names, key_feat_weights):
 
 # %% Run main script
 if __name__ == '__main__':
-
-    path_panik = "Y:\\PsyThera\\Projekte_Meinke\\PAI_Personalized_Advantage_Index\\4_Analysis_CM\Datenaufbereitung_Panik\\no_one_hot"
-    path_results_base = "Y:\\PsyThera\\Projekte_Meinke\\PAI_Personalized_Advantage_Index\\Results_PAI_Test"
+    
     # Run script via IDE (start)
-    PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(
-        PATH_INPUT_DATA=path_panik,
-        INPUT_DATA_NAME="PANIK_TEST2",
-        PATH_RESULTS_BASE = path_results_base,
-        CLASSIFIER="ridge_regression",  # ridge_regression OR random_forest
-        HP_TUNING="False")
+    working_directory = os.getcwd()
+    path_data = os.path.join(working_directory,"synthet_test_data")
+    path_results_base = working_directory
+    # PATH_INPUT_DATA = path_data
+    # OPTIONS = set_options(classifier = "random_forest",
+    #                       number_folds = 5, 
+    #                       number_repeats = 1,  
+    #                       hp_tuning = "false"
+    #                       )
+    # PATH_RESULTS = generate_and_create_results_path(path_results_base, 
+    #                                                 input_data_name = "test_data",
+    #                                                 OPTIONS = OPTIONS)
     # Run script via IDE (end)
 
-    # Run script via terminal (start)
-    # parser = argparse.ArgumentParser(
-    #     description='Advanced script to calculate the PAI')
+    #Run script via terminal or GUI (start)
+    parser = argparse.ArgumentParser(
+        description='Advanced script to calculate the PAI')
     # parser.add_argument('--PATH_INPUT_DATA', type=str,
     #                     help='Path to input data')
     # parser.add_argument('--INPUT_DATA_NAME', type=str,
     #                     help='Name of input dataset')
     # parser.add_argument('--PATH_RESULTS_BASE', type=str,
     #                     help='Path to save results')
+    # parser.add_argument('--NUMBER_FOLDS', type=int,
+    #                     help='Number of folds in the cross-validation')
+    # parser.add_argument('--NUMBER_REPEATS', type=int,
+    #                     help='Number of repetitions of the cross-validation')
     # parser.add_argument('--CLASSIFIER', type=str,
     #                     help='Classifier to use, set ridge_regression or random_forest')
     # parser.add_argument('--HP_TUNING', type=str,
     #                     help='Should hyperparameter tuning be applied? Set False or True')
     # args = parser.parse_args()
-
-    # PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(PATH_INPUT_DATA=args.PATH_INPUT_DATA,
-    #                                                                                     INPUT_DATA_NAME=args.INPUT_DATA_NAME,
-    #                                                                                     PATH_RESULTS_BASE=args.PATH_RESULTS_BASE,
-    #                                                                                     CLASSIFIER=args.CLASSIFIER,
-    #                                                                                     HP_TUNING=args.HP_TUNING)
-    # Run script via terminal (end)
+    
+    PATH_INPUT_DATA = path_data
+    OPTIONS = set_options(classifier = "ridge_regression",
+                          number_folds = 5,
+                          number_repeats = 1,
+                          hp_tuning = "False"
+                          )
+    PATH_RESULTS = generate_and_create_results_path(path_results_base = path_results_base, 
+                                                    input_data_name = "TEST",
+                                                    OPTIONS = OPTIONS)
 
     # Set-up
-    create_folder_to_save_results(PATH_RESULTS)
-    create_folder_to_save_results(PATH_RESULTS_PLOTS)
     start_time = time.time()
     print('\nThe scikit-learn version is {}.'.format(sklearn.__version__))
 
     # Perform splitting stratified by treatment group
-    name_groups_id_import_path = os.path.join(PATH_INPUT_DATA, OPTIONS['name_groups_id'])
-    name_groups_id_import = read_csv(name_groups_id_import_path, sep="\t", header=0)
-    y = np.array(name_groups_id_import)
+    groups_import_path = os.path.join(PATH_INPUT_DATA, "groups.txt")
+    groups = read_csv(groups_import_path, sep="\t", header=0)
+    y = np.array(groups)
     sfk = RepeatedStratifiedKFold(n_splits=OPTIONS['number_folds'],
                                   n_repeats=OPTIONS["number_repeats"],
                                   random_state=0)
