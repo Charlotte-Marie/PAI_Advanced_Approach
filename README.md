@@ -19,50 +19,59 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
     c) Automatically for non-conda-users, run in the terminal:
     
     ```python
-     pip install -r "requirements.txt".
+    pip install -r "requirements.txt".
     ```
     
 
 # Run the script
 
-There are two ways to run the script. In both ways, the following arguments need to be given:
+There are three ways to run the script. For all ways, the following arguments need to be given:
 
 - PATH_INPUT_DATA → The path to the folder which contains features.txt, labels.txt, and groups.txt
 - INPUT_DATA_NAME → Name of input data or more general string that will be part of the name of the results folder
-- RESULTS_PATH_BASE -> Path to store the results folder
+- RESULTS_PATH_BASE → Path to store the results folder
+- NUMBER_FOLDS → Number of folds in the cross-validation (typically 5 or 10)
+- NUMBER_ITERIT → Number of repetitions of the cross-validation (typically 100, choose 1 for a first try)
 - CLASSIFIER → Choose ridge_regression OR random_forest
 - HP_TUNING → Choose True OR False
 
-## Run script via Terminal
+## Run script via Graphical User Interface (most simple)
+Run the script "GUI.py". A small graphical user interface will launch automatically, allowing you to provide the arguments specified above as input.
 
+## Run script via (anaconda) terminal
 a) Make sure that the section for running the script via IDE is commented
 
 ```python
- 		# Run script via IDE (start)
-    # PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(
-    #     PATH_INPUT_DATA=path_panik,
-    #     INPUT_DATA_NAME="PANIK",
-    #     CLASSIFIER="ridge_regression",  # ridge_regression OR random_forest
-    #     HP_TUNING="False")
+    # Run script via IDE (start)
+    # working_directory = os.getcwd()
+    # path_data = os.path.join(working_directory, "synthet_test_data")
+    # path_results_base = working_directory
+    # PATH_INPUT_DATA = path_data
+    # OPTIONS = set_options(classifier = "random_forest",
+    #                       number_folds = 5,
+    #                       number_repetit = 1,
+    #                       hp_tuning = "false"
+    #                       )
+    # PATH_RESULTS = generate_and_create_results_path(path_results_base,
+    #                                                 input_data_name = "test_data",
+    #                                                 OPTIONS = OPTIONS)
     # Run script via IDE (end)
 ```
 
-b) Open a terminal window.
+b) Example: Open the terminal window in anaconda
 
-c) Navigate to the directory where your script is located.
-
-d) Run the following command:
+c) Example: Run the following command (Replace YOUR_PATH with your own paths)
 
 ```python
-Main_PAI_advanced_approach.py --PATH_INPUT_DATA *Your_path -*-INPUT_DATA_NAME *Your_data_name*
+python "YOUR_PATH\Main_PAI_advanced_approach.py" --INPUT_DATA_NAME test --PATH_INPUT_DATA "YOUR_PATH/PAI_Advanced_Approach/synthet_test_data" --PATH_RESULTS_BASE "YOUR_RESULTS_PATH" --NUMBER_FOLDS 5 --NUMBER_REPETIT 1 --CLASSIFIER ridge_regression --HP_TUNING False
 ```
 
 ## Run script in your IDE (e.g., Spyder)
 
-1. Make sure that the section for running the script via terminal is commented
+a) Make sure that the section for running the script via terminal is commented
 
 ```python
-    # Run script via terminal (start)
+    # Run script via terminal or GUI (start)
     # parser = argparse.ArgumentParser(
     #     description='Advanced script to calculate the PAI')
     # parser.add_argument('--PATH_INPUT_DATA', type=str,
@@ -71,41 +80,46 @@ Main_PAI_advanced_approach.py --PATH_INPUT_DATA *Your_path -*-INPUT_DATA_NAME *Y
     #                     help='Name of input dataset')
     # parser.add_argument('--PATH_RESULTS_BASE', type=str,
     #                     help='Path to save results')
+    # parser.add_argument('--NUMBER_FOLDS', type=int,
+    #                     help='Number of folds in the cross-validation')
+    # parser.add_argument('--NUMBER_REPETIT', type=int,
+    #                     help='Number of repetitions of the cross-validation')
     # parser.add_argument('--CLASSIFIER', type=str,
     #                     help='Classifier to use, set ridge_regression or random_forest')
     # parser.add_argument('--HP_TUNING', type=str,
     #                     help='Should hyperparameter tuning be applied? Set False or True')
     # args = parser.parse_args()
 
-    # PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(PATH_INPUT_DATA=args.PATH_INPUT_DATA,
-    #                                                                                     INPUT_DATA_NAME=args.INPUT_DATA_NAME,
-    #                                                                                     PATH_RESULTS_BASE=args.PATH_RESULTS_BASE,
-    #                                                                                     CLASSIFIER=args.CLASSIFIER,
-    #                                                                                     HP_TUNING=args.HP_TUNING)
-    # Run script via terminal (end)
+    # PATH_INPUT_DATA = args.PATH_INPUT_DATA
+    # OPTIONS = set_options(classifier=args.CLASSIFIER,
+    #                       number_folds=args.NUMBER_FOLDS,
+    #                       number_repetit=args.NUMBER_REPETIT,
+    #                       hp_tuning=args.HP_TUNING
+    #                       )
+    # PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
+    #                                                 input_data_name=args.INPUT_DATA_NAME,
+    #                                                 OPTIONS=OPTIONS)
+    # Run script via terminal or GUI (end)
 ```
 
-2. Set the argument needed in the script
+b) Set the arguments needed in the script
 
 ```python
- PATH_RESULTS, PATH_RESULTS_PLOTS, PATH_INPUT_DATA, OPTIONS = set_paths_and_options(
-        PATH_INPUT_DATA= YOUR_PATH,
-        INPUT_DATA_NAME= YOUR_NAME,
-        PATH_RESULTS_BASE = YOUR_PATH,
-        CLASSIFIER="ridge_regression",  # ridge_regression OR random_forest
-        HP_TUNING="False")
+    working_directory = os.getcwd()
+    path_data = os.path.join(working_directory, "synthet_test_data")
+    path_results_base = working_directory
+    PATH_INPUT_DATA = path_data
+    OPTIONS = set_options(classifier = "random_forest",
+                          number_folds = 5,
+                          number_repetit = 1,
+                          hp_tuning = "false"
+                          )
+    PATH_RESULTS = generate_and_create_results_path(path_results_base,
+                                                    input_data_name = "test_data",
+                                                    OPTIONS = OPTIONS)
 ```
 
-3. Run the script
-
-# Additional Customization
-
-Besides these main arguments that need to be set, you easily change several settings within the function set_paths_and_options. The most important ones are:
-
-```python
-OPTIONS['number_folds'] = 5 # number of folds in the cross-validation
-OPTIONS["number_repeats"] = 100 # number of repetitions of the cross-validation
-```
+c) Run the script
 
 # Prepare Input Data
 
