@@ -8,7 +8,8 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
 2. Make sure all needed requirements for this script are installed.
 
    a) Manually
-       You only need three additional packages (numpy, pandas, scikit). Install them manually if you have not installed them yet.
+
+      You only need three additional packages (numpy, pandas, scikit). Install them manually if you have not installed them yet.
     
     b) Automatically for conda-users, run in the terminal:
     
@@ -25,7 +26,7 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
 
 # Run the script
 
-There are three ways to run the script. For all ways, the following arguments need to be given:
+To execute the script, there are three methods available, each requiring the same set of arguments to be provided:
 
 - PATH_INPUT_DATA → The path to the folder which contains features.txt, labels.txt, and groups.txt
 - INPUT_DATA_NAME → Name of input data or more general string that will be part of the name of the results folder
