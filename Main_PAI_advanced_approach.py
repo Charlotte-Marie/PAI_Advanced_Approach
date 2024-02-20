@@ -48,8 +48,7 @@ def set_options(classifier, number_folds=5, number_repetit=100, hp_tuning="False
 def generate_and_create_results_path(path_results_base, input_data_name, OPTIONS):
     # Generate PATH_RESULTS
     if OPTIONS["hp_tuning"] == "True":
-        model_name = "final" + "_" + \
-            OPTIONS["classifier"] + "_" + "hp_tuned_grid"
+        model_name = OPTIONS["classifier"] + "_" + "hp_tuned_grid"
     else:
         model_name = OPTIONS["classifier"]
     PATH_RESULTS = os.path.join(path_results_base, input_data_name, model_name)
@@ -541,7 +540,7 @@ if __name__ == '__main__':
                         help='Path to save results')
     parser.add_argument('--NUMBER_FOLDS', type=int, default = 5,
                         help='Number of folds in the cross-validation')
-    parser.add_argument('--NUMBER_REPETIT', type=int, default = 100,
+    parser.add_argument('--NUMBER_REPETIT', type=int, default = 1,
                         help='Number of repetitions of the cross-validation')
     parser.add_argument('--CLASSIFIER', type=str, 
                         help='Classifier to use, set ridge_regression or random_forest')
