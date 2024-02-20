@@ -51,7 +51,7 @@ def generate_and_create_results_path(path_results_base, input_data_name, OPTIONS
         model_name = "final" + "_" + \
             OPTIONS["classifier"] + "_" + "hp_tuned_grid"
     else:
-        model_name = "final" + "_" + OPTIONS["classifier"]
+        model_name = OPTIONS["classifier"]
     PATH_RESULTS = os.path.join(path_results_base, input_data_name, model_name)
     PATH_RESULTS_PLOTS = os.path.join(PATH_RESULTS, "plots")
     create_folder_to_save_results(PATH_RESULTS)
@@ -539,13 +539,13 @@ if __name__ == '__main__':
                         help='Name of input dataset')
     parser.add_argument('--PATH_RESULTS_BASE', type=str,
                         help='Path to save results')
-    parser.add_argument('--NUMBER_FOLDS', type=int,
+    parser.add_argument('--NUMBER_FOLDS', type=int, default = 5,
                         help='Number of folds in the cross-validation')
-    parser.add_argument('--NUMBER_REPETIT', type=int,
+    parser.add_argument('--NUMBER_REPETIT', type=int, default = 100,
                         help='Number of repetitions of the cross-validation')
-    parser.add_argument('--CLASSIFIER', type=str,
+    parser.add_argument('--CLASSIFIER', type=str, 
                         help='Classifier to use, set ridge_regression or random_forest')
-    parser.add_argument('--HP_TUNING', type=str,
+    parser.add_argument('--HP_TUNING', type=str, default = "False",
                         help='Should hyperparameter tuning be applied? Set False or True')
     args = parser.parse_args()
 
