@@ -8,6 +8,7 @@ The script defines customized functions and classes for model and PAI evaluation
 import numpy as np
 import math
 from scipy import stats
+import scipy
 import os
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -99,7 +100,7 @@ def ev_PAI(y_prediction, plot_path=None, suffix=""):
 
     # Absolute PAIs
     abspai = abs(y_prediction["PAI"])
-    abspai_mean = np.mean(abspai)
+    abspai_mean = round(np.mean(abspai),2)
 
     # Plot distribution of absolute PAIs
     sns.histplot(abspai)
@@ -139,12 +140,20 @@ def ev_PAI(y_prediction, plot_path=None, suffix=""):
     # Mann-Whitney-U-test
     #manwhit_statistic, manwhit_p_value = stats.mannwhitneyu(obs_outcomes_nonoptimal, obs_outcomes_optimal)
 
-    # Step 2: Calculate t-test (even though the normality assumption is often violated,
+    # Step 2: Calculate one-sided t-test (even though the normality assumption is often violated,
     # the t-test is used as default as it is robust to most violations)
-    mean_outcome_optimal = np.mean(obs_outcomes_optimal)
-    mean_outcome_nonoptimal = np.mean(obs_outcomes_nonoptimal)
+    mean_outcome_optimal = round(np.mean(obs_outcomes_optimal),2)
+    mean_outcome_nonoptimal = round(np.mean(obs_outcomes_nonoptimal),2)
+    SD_outcome_optimal = round(np.std(obs_outcomes_optimal),2)
+    SD_outcome_nonoptimal = round(np.std(obs_outcomes_nonoptimal),2)
+    n_optimal = len(obs_outcomes_optimal)
+    n_nonoptimal = len(obs_outcomes_nonoptimal)
     t_statistic, t_p_value = stats.ttest_ind(
-        obs_outcomes_nonoptimal, obs_outcomes_optimal)
+        obs_outcomes_nonoptimal,obs_outcomes_optimal, equal_var = True, alternative = "greater")
+    
+    # Welch-test
+    Welch_t_statistic, Welch_p_value = stats.ttest_ind(
+        obs_outcomes_nonoptimal, obs_outcomes_optimal, equal_var = False, alternative = "greater")
 
     # Cohen´s d for observed outcome optimal / nonoptimal
     def cohens_d(x, y):
@@ -160,20 +169,24 @@ def ev_PAI(y_prediction, plot_path=None, suffix=""):
 
     cohens_d = cohens_d(x=obs_outcomes_nonoptimal, y=obs_outcomes_optimal)
 
-    PAI_metrics = {"mean abspai": abspai_mean,
-                   "mean outcome optimal": mean_outcome_optimal,
-                   "mean outcome nonoptimal": mean_outcome_nonoptimal,
-                   "t-test_statistic": t_statistic,
-                   "t-test_p_value": t_p_value,
-                   "cohens d": cohens_d,
+    PAI_metrics = {"mean_abspai": abspai_mean,
+                   "mean_outcome_optimal": f"{mean_outcome_optimal} ({SD_outcome_optimal})",
+                   "mean_outcome_nonoptimal":  f"{mean_outcome_nonoptimal} ({SD_outcome_nonoptimal})",
+                   "n_optimal": n_optimal,
+                   "n_nonoptimal": n_nonoptimal,
+                   "t-test_statistic": round(t_statistic,2),
+                   "t-test_p_value": round(t_p_value,4),
+                   "cohens d": round(cohens_d,2),
                    # "manwhit_statistic": manwhit_statistic,
                    # "manwhit_p_value": manwhit_p_value,
-                   "levene_W_statistic": levene_W_statistic,
-                   "levene_p_value": levene_p_value,
-                   "shapiro_opt_W_statistic": shapiro_opt_W_statistic,
-                   "shapiro_opt_p_value": shapiro_opt_p_value,
-                   "shapiro_nonopt_W_statistic": shapiro_nonopt_W_statistic,
-                   "shapiro_nonopt_p_value": shapiro_nonopt_p_value,
+                   "levene_W_statistic": round(levene_W_statistic,2),
+                   "levene_p_value": round(levene_p_value,4),
+                   "shapiro_opt_W_statistic": round(shapiro_opt_W_statistic,2),
+                   "shapiro_opt_p_value": round(shapiro_opt_p_value,4),
+                   "shapiro_nonopt_W_statistic": round(shapiro_nonopt_W_statistic,2),
+                   "shapiro_nonopt_p_value": round(shapiro_nonopt_p_value,4),
+                   "Welch_t_statistic": round(Welch_t_statistic,2),
+                   "Welch_t_p_value": round(Welch_p_value,4)
                    }
 
     return PAI_metrics
