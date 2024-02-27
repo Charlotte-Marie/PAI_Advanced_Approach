@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* Add your CSS styles here if needed */
+    </style>
+</head>
+<body>
+
+    <h1>{{ main_heading }}</h1>
+
+    <h2>{{ sub_header_1 }}</h2>
+
+    <h2>{{ sub_header_2 }}</h2>
+    <div id="distribution-plots">
+        <!-- Content for sub-header 2: two plots -->
+        <div id="image-container-1">
+            <img id="plot-image" src="{{ plot_filenames[0] }}" alt="Plot Image" onclick="changeImage()">
+        </div>
+        <div id="image-container-2">
+            <img id="plot-image" src="{{ plot_filenames[1] }}" alt="Plot Image" onclick="changeImage()">
+        </div>
+    </div>
+
+    <p>{{ additional_text }}</p>
+
+    <script>
+        // JavaScript/jQuery code for changing images on click
+        var currentImageIndex = 0;
+        var plotFilenames = {{ plot_filenames | tojson }};
+
+        function changeImage() {
+            currentImageIndex = (currentImageIndex + 1) % plotFilenames.length;
+            document.getElementById("plot-image").src = plotFilenames[currentImageIndex];
+        }
+    </script>
+
+</body>
+</html>
+
+
+
+

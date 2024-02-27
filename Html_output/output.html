@@ -3,17 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Plots</title>
+    <title>PAI Report</title>
     <style>
         /* Add your CSS styles here if needed */
     </style>
 </head>
 <body>
 
-    <h1>Your Plots and Text</h1>
+    <h1>Report Personalized Advantage Index</h1>
 
-    <div id="image-container">
-        <img id="plot-image" src="C:\Users\charl\Documents\Promotion\results_synth\random_forest\plots\optimal_vs_nonoptimal_0_all.png" alt="Plot Image" onclick="changeImage()">
+    <h2>Evaluating the PAI across 100 repetitions of the CV</h2>
+
+    <h2>Evaluating the PAI – results per repetition</h2>
+    <div id="distribution-plots">
+        <!-- Content for sub-header 2: two plots -->
+        <div id="image-container-1">
+            <img id="plot-image" src="C:\Users\Acer\Documents\GitHub\PAI_Advanced_Approach\Html_output\results_test_data\ridge_regression\plots\PAI_distribution_0_all" alt="Plot Image" onclick="changeImage()">
+        </div>
+        <div id="image-container-2">
+            <img id="plot-image" src="C:\Users\Acer\Documents\GitHub\PAI_Advanced_Approach\Html_output\results_test_data\ridge_regression\plots\optimal_vs_nonoptimal_0_all.png" alt="Plot Image" onclick="changeImage()">
+        </div>
     </div>
 
     <p>Additional text goes here.</p>
@@ -21,7 +30,7 @@
     <script>
         // JavaScript/jQuery code for changing images on click
         var currentImageIndex = 0;
-        var plotFilenames = ["C:\\Users\\charl\\Documents\\Promotion\\results_synth\\random_forest\\plots\\optimal_vs_nonoptimal_0_all.png", "C:\\Users\\charl\\Documents\\Promotion\\results_synth\\random_forest\\plots\\optimal_vs_nonoptimal_1_all.png"];
+        var plotFilenames = ["C:\\Users\\Acer\\Documents\\GitHub\\PAI_Advanced_Approach\\Html_output\\results_test_data\\ridge_regression\\plots\\PAI_distribution_0_all", "C:\\Users\\Acer\\Documents\\GitHub\\PAI_Advanced_Approach\\Html_output\\results_test_data\\ridge_regression\\plots\\optimal_vs_nonoptimal_0_all.png"];
 
         function changeImage() {
             currentImageIndex = (currentImageIndex + 1) % plotFilenames.length;
