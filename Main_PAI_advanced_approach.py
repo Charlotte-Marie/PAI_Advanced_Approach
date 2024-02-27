@@ -520,49 +520,49 @@ def summarize_features(outcomes, key_feat_names, key_feat_weights):
 # %% Run main script
 if __name__ == '__main__':
 
-    # Run script via IDE (start)
-    working_directory = os.getcwd()
-    path_data = os.path.join(working_directory, "synthet_test_data")
-    path_results_base = working_directory
-    PATH_INPUT_DATA = path_data
-    OPTIONS = set_options(classifier = "random_forest",
-                          number_folds = 5,
-                          number_repetit = 2,
-                          hp_tuning = "false"
-                          )
-    PATH_RESULTS = generate_and_create_results_path(path_results_base,
-                                                    input_data_name = "sdfsdf",
-                                                    OPTIONS = OPTIONS)
-    # Run script via IDE (end)
-
-    # Run script via terminal or GUI (start)
-    # parser = argparse.ArgumentParser(
-    #     description='Advanced script to calculate the PAI')
-    # parser.add_argument('--PATH_INPUT_DATA', type=str,
-    #                     help='Path to input data')
-    # parser.add_argument('--INPUT_DATA_NAME', type=str,
-    #                     help='Name of input dataset')
-    # parser.add_argument('--PATH_RESULTS_BASE', type=str,
-    #                     help='Path to save results')
-    # parser.add_argument('--NUMBER_FOLDS', type=int, default = 5,
-    #                     help='Number of folds in the cross-validation')
-    # parser.add_argument('--NUMBER_REPETIT', type=int, default = 1,
-    #                     help='Number of repetitions of the cross-validation')
-    # parser.add_argument('--CLASSIFIER', type=str, 
-    #                     help='Classifier to use, set ridge_regression or random_forest')
-    # parser.add_argument('--HP_TUNING', type=str, default = "False",
-    #                     help='Should hyperparameter tuning be applied? Set False or True')
-    # args = parser.parse_args()
-
-    # PATH_INPUT_DATA = args.PATH_INPUT_DATA
-    # OPTIONS = set_options(classifier=args.CLASSIFIER,
-    #                       number_folds=args.NUMBER_FOLDS,
-    #                       number_repetit=args.NUMBER_REPETIT,
-    #                       hp_tuning=args.HP_TUNING
+    # # Run script via IDE (start)
+    # working_directory = os.getcwd()
+    # path_data = os.path.join(working_directory, "synthet_test_data")
+    # path_results_base = working_directory
+    # PATH_INPUT_DATA = path_data
+    # OPTIONS = set_options(classifier = "random_forest",
+    #                       number_folds = 5,
+    #                       number_repetit = 2,
+    #                       hp_tuning = "false"
     #                       )
-    # PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
-    #                                                 input_data_name=args.INPUT_DATA_NAME,
-    #                                                 OPTIONS=OPTIONS)
+    # PATH_RESULTS = generate_and_create_results_path(path_results_base,
+    #                                                 input_data_name = "sdfsdf",
+    #                                                 OPTIONS = OPTIONS)
+    # # Run script via IDE (end)
+
+    #Run script via terminal or GUI (start)
+    parser = argparse.ArgumentParser(
+        description='Advanced script to calculate the PAI')
+    parser.add_argument('--PATH_INPUT_DATA', type=str,
+                        help='Path to input data')
+    parser.add_argument('--INPUT_DATA_NAME', type=str,
+                        help='Name of input dataset')
+    parser.add_argument('--PATH_RESULTS_BASE', type=str,
+                        help='Path to save results')
+    parser.add_argument('--NUMBER_FOLDS', type=int, default = 5,
+                        help='Number of folds in the cross-validation')
+    parser.add_argument('--NUMBER_REPETIT', type=int, default = 1,
+                        help='Number of repetitions of the cross-validation')
+    parser.add_argument('--CLASSIFIER', type=str, 
+                        help='Classifier to use, set ridge_regression or random_forest')
+    parser.add_argument('--HP_TUNING', type=str, default = "False",
+                        help='Should hyperparameter tuning be applied? Set False or True')
+    args = parser.parse_args()
+
+    PATH_INPUT_DATA = args.PATH_INPUT_DATA
+    OPTIONS = set_options(classifier=args.CLASSIFIER,
+                          number_folds=args.NUMBER_FOLDS,
+                          number_repetit=args.NUMBER_REPETIT,
+                          hp_tuning=args.HP_TUNING
+                          )
+    PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
+                                                    input_data_name=args.INPUT_DATA_NAME,
+                                                    OPTIONS=OPTIONS)
 
     # Set-up
     start_time = time.time()
