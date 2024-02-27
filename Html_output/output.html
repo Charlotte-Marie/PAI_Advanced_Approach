@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Plots</title>
+    <style>
+        /* Add your CSS styles here if needed */
+    </style>
+</head>
+<body>
+
+    <h1>Your Plots and Text</h1>
+
+    <div id="image-container">
+        <img id="plot-image" src="C:\Users\charl\Documents\Promotion\results_synth\random_forest\plots\optimal_vs_nonoptimal_0_all.png" alt="Plot Image" onclick="changeImage()">
+    </div>
+
+    <p>Additional text goes here.</p>
+
+    <script>
+        // JavaScript/jQuery code for changing images on click
+        var currentImageIndex = 0;
+        var plotFilenames = ["C:\\Users\\charl\\Documents\\Promotion\\results_synth\\random_forest\\plots\\optimal_vs_nonoptimal_0_all.png", "C:\\Users\\charl\\Documents\\Promotion\\results_synth\\random_forest\\plots\\optimal_vs_nonoptimal_1_all.png"];
+
+        function changeImage() {
+            currentImageIndex = (currentImageIndex + 1) % plotFilenames.length;
+            document.getElementById("plot-image").src = plotFilenames[currentImageIndex];
+        }
+    </script>
+
+</body>
+</html>
+
+
+

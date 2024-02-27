@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ heading }}</h1>
+
+    {% for filename in plot_filenames %}
+        <img src="{{ filename }}" alt="Plot Image"><br>
+    {% endfor %}
+
+    <p>{{ additional_text }}</p>
+</body>
+</html>
