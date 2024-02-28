@@ -10,16 +10,38 @@
         /* Style for image containers */
         #distribution-plots {
             display: flex;
+            flex-direction: row;
+            justify-content: center;
         }
 
         .image-container {
             margin-right: 20px;
+            text-align: center;
+        }
+
+        /* Reduce space between title and figures */
+        .image-container h3 {
+            margin-bottom: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
         }
 
         /* Responsive styling */
         @media (max-width: 768px) {
             #distribution-plots {
                 flex-direction: column;
+                align-items: center;
             }
 
             .image-container {
@@ -35,13 +57,32 @@
 
     <h2>{{ sub_header_1 }}</h2>
 
+    <table>
+        <thead>
+            <tr>
+                {% for column_name in column_names %}
+                <th>{{ column_name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            {% for value in summary_values %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
     <h2>{{ sub_header_2 }}</h2>
     <div id="distribution-plots">
         <!-- Content for sub-header 2: two plots -->
         <div class="image-container" id="image-container-1">
+            <h3>{{ figure_1_title }}</h3>
             <img src="{{ plot_filenames[0] }}" alt="Plot Image 1" onclick="changeImage(0)">
         </div>
         <div class="image-container" id="image-container-2">
+            <h3>{{ figure_2_title }}</h3>
             <img src="{{ plot_filenames[1] }}" alt="Plot Image 2" onclick="changeImage(1)">
         </div>
     </div>
@@ -57,7 +98,7 @@
 
         function changeImage(imageIndex) {
             currentImageIndexes[imageIndex] = (currentImageIndexes[imageIndex] + 1) % plotFilenames.length;
-            document.getElementById("image-container-" + (imageIndex + 1)).getElementsByTagName("img")[0].scr = plotFilenames[currentImageIndexes[imageIndex]];
+            document.getElementById("image-container-" + (imageIndex + 1)).getElementsByTagName("img")[0].src = plotFilenames[currentImageIndexes[imageIndex]];
         }
     </script>
 
