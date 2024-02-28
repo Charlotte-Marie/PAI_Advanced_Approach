@@ -24,6 +24,19 @@
             margin-bottom: 5px;
         }
 
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
         /* Responsive styling */
         @media (max-width: 768px) {
             #distribution-plots {
@@ -43,6 +56,47 @@
     <h1>Report Personalized Advantage Index</h1>
 
     <h2>Evaluating the PAI across 100 repetitions of the CV</h2>
+
+    <table>
+        <thead>
+            <tr>
+                
+                <th>n_t_test_sig</th>
+                
+                <th>mean abspai</th>
+                
+                <th>mean abspai SD</th>
+                
+                <th>mean Cohens d</th>
+                
+                <th>mean Cohens d SD</th>
+                
+                <th>n_variance_viol</th>
+                
+                <th>n_normal_viol</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            
+                <td>1</td>
+                
+                <td>5.17</td>
+                
+                <td>0.0</td>
+                
+                <td>0.38</td>
+                
+                <td>0.0</td>
+                
+                <td>0</td>
+                
+                <td>0</td>
+                
+            </tr>
+        </tbody>
+    </table>
 
     <h2>Evaluating the PAI: Results per repetition</h2>
     <div id="distribution-plots">
