@@ -6,6 +6,27 @@
     <title>{{ title }}</title>
     <style>
         /* Add your CSS styles here if needed */
+
+        /* Style for image containers */
+        #distribution-plots {
+            display: flex;
+        }
+
+        .image-container {
+            margin-right: 20px;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            #distribution-plots {
+                flex-direction: column;
+            }
+
+            .image-container {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -17,24 +38,26 @@
     <h2>{{ sub_header_2 }}</h2>
     <div id="distribution-plots">
         <!-- Content for sub-header 2: two plots -->
-        <div id="image-container-1">
-            <img id="plot-image" src="{{ plot_filenames[0] }}" alt="Plot Image" onclick="changeImage()">
+        <div class="image-container" id="image-container-1">
+            <img src="{{ plot_filenames[0] }}" alt="Plot Image 1" onclick="changeImage(0)">
         </div>
-        <div id="image-container-2">
-            <img id="plot-image" src="{{ plot_filenames[1] }}" alt="Plot Image" onclick="changeImage()">
+        <div class="image-container" id="image-container-2">
+            <img src="{{ plot_filenames[1] }}" alt="Plot Image 2" onclick="changeImage(1)">
         </div>
     </div>
+
+    <h2>{{ sub_header_3 }}</h2>
 
     <p>{{ additional_text }}</p>
 
     <script>
         // JavaScript/jQuery code for changing images on click
-        var currentImageIndex = 0;
+        var currentImageIndexes = [0, 0];
         var plotFilenames = {{ plot_filenames | tojson }};
 
-        function changeImage() {
-            currentImageIndex = (currentImageIndex + 1) % plotFilenames.length;
-            document.getElementById("plot-image").src = plotFilenames[currentImageIndex];
+        function changeImage(imageIndex) {
+            currentImageIndexes[imageIndex] = (currentImageIndexes[imageIndex] + 1) % plotFilenames.length;
+            document.getElementById("image-container-" + (imageIndex + 1)).getElementsByTagName("img")[0].scr = plotFilenames[currentImageIndexes[imageIndex]];
         }
     </script>
 
