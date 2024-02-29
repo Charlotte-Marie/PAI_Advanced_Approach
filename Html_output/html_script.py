@@ -1,21 +1,44 @@
-# -*- coding: utf-8 -*-
-"""
-"""
-
 from jinja2 import Template
 
 # Set paths
-summary_path = "C:\\Users\\Acer\\Documents\\GitHub\\PAI_Advanced_Approach\\Html_output\\results_test_data\\ridge_regression\\PAI_summary_all.txt"
+summary_path = "C:/Users/tillj/Documents/GitHub/PAI_Advanced_Approach/Html_output/results_test_data/ridge_regression/PAI_summary_all.txt"
+model_performance_path = "C:/Users/tillj/Documents/GitHub/PAI_Advanced_Approach/Html_output/results_test_data/ridge_regression/modelperformance_summary.txt"
 
 # Read the PAI summary file
 with open(summary_path, 'r') as summary_file:
     lines = summary_file.readlines()
-    
+
 # Extract column names and values
 column_names = lines[0].strip().split('\t')
-summary_values = lines[1].strip().split('\t')[1:] # skip first value (row index)
-# Combine to list of dictionaries
-#table_data = [{column_names[i]: summary_values[i]} for i in range(len(column_names))]
+summary_values = lines[1].strip().split('\t')[1:]
+
+# Read and process the model performance summary file
+model_performance_data = {}
+with open(model_performance_path, 'r') as file:
+    for line in file:
+        parts = line.strip().split('\t')
+        if len(parts) == 2:
+            key, value = parts
+            model_performance_data[key] = float(value)
+
+# Model performance metrics for HTML template
+model_performance_metrics = {
+    'Mean_MSE': [
+        model_performance_data['Mean_all_RMSE'],
+        model_performance_data['Mean_option_A_RMSE'],
+        model_performance_data['Mean_option_B_RMSE']
+    ],
+    'Mean_Cor': [
+        model_performance_data['Mean_all_correlation'],
+        model_performance_data['Mean_option_A_correlation'],
+        model_performance_data['Mean_option_B_correlation']
+    ],
+    'Mean_MAE': [
+        model_performance_data['Mean_all_MAE'],
+        model_performance_data['Mean_option_A_MAE'],
+        model_performance_data['Mean_option_B_MAE']
+    ],
+}
 
 # Data for the html template
 template_data = {
