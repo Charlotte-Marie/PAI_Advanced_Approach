@@ -87,7 +87,38 @@
         </div>
     </div>
 
-    <h2>{{ sub_header_3 }}</h2>
+<h2>{{ sub_header_3 }}</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Measure</th>
+            <th>All</th>
+            <th>Model Treat A</th>
+            <th>Model Treat B</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Mean MSE</td>
+            <td>{{ model_performance_metrics.Mean_MSE[0] }}</td>
+            <td>{{ model_performance_metrics.Mean_MSE[1] }}</td>
+            <td>{{ model_performance_metrics.Mean_MSE[2] }}</td>
+        </tr>
+        <tr>
+            <td>Mean Correlation</td>
+            <td>{{ model_performance_metrics.Mean_Cor[0] }}</td>
+            <td>{{ model_performance_metrics.Mean_Cor[1] }}</td>
+            <td>{{ model_performance_metrics.Mean_Cor[2] }}</td>
+        </tr>
+        <tr>
+            <td>Mean MAE</td>
+            <td>{{ model_performance_metrics.Mean_MAE[0] }}</td>
+            <td>{{ model_performance_metrics.Mean_MAE[1] }}</td>
+            <td>{{ model_performance_metrics.Mean_MAE[2] }}</td>
+        </tr>
+    </tbody>
+</table>
+
 
     <p>{{ additional_text }}</p>
 
@@ -104,7 +135,3 @@
 
 </body>
 </html>
-
-
-
-
