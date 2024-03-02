@@ -75,17 +75,19 @@
     </table>
 
     <h2>{{ sub_header_2 }}</h2>
-    <div id="distribution-plots">
-        <!-- Content for sub-header 2: two plots -->
-        <div class="image-container" id="image-container-1">
-            <h3>{{ figure_1_title }}</h3>
-            <img src="{{ plot_filenames[0] }}" alt="Plot Image 1" onclick="changeImage(0)">
-        </div>
-        <div class="image-container" id="image-container-2">
-            <h3>{{ figure_2_title }}</h3>
-            <img src="{{ plot_filenames[1] }}" alt="Plot Image 2" onclick="changeImage(1)">
-        </div>
+<div id="distribution-plots">
+    <!-- Adjusted content for sub-header 1: PAI Distribution plots -->
+    <div id="pai_distribution" class="image-container">
+        <h3>{{ figure_1_title }}</h3>
+        <img src="{{ plot_filenames['pai_distribution'][0] }}" alt="PAI Distribution Plot" onclick="changeImage('pai_distribution')">
     </div>
+    
+    <!-- Adjusted content for sub-header 2: Optimal vs Nonoptimal plots -->
+    <div id="optimal_vs_nonoptimal" class="image-container">
+        <h3>{{ figure_2_title }}</h3>
+        <img src="{{ plot_filenames['optimal_vs_nonoptimal'][0] }}" alt="Optimal vs Nonoptimal Plot" onclick="changeImage('optimal_vs_nonoptimal')">
+    </div>
+</div>
 
 <h2>{{ sub_header_3 }}</h2>
 <table>
@@ -122,16 +124,16 @@
 
     <p>{{ additional_text }}</p>
 
-    <script>
-        // JavaScript/jQuery code for changing images on click
-        var currentImageIndexes = [0, 0];
-        var plotFilenames = {{ plot_filenames | tojson }};
-
-        function changeImage(imageIndex) {
-            currentImageIndexes[imageIndex] = (currentImageIndexes[imageIndex] + 1) % plotFilenames.length;
-            document.getElementById("image-container-" + (imageIndex + 1)).getElementsByTagName("img")[0].src = plotFilenames[currentImageIndexes[imageIndex]];
-        }
-    </script>
+<script>
+    var currentImageIndexes = {'pai_distribution': 0, 'optimal_vs_nonoptimal': 0};
+    var plotFilenames = {{ plot_filenames | tojson | safe }};
+    
+    function changeImage(category) {
+        currentImageIndexes[category] = (currentImageIndexes[category] + 1) % plotFilenames[category].length;
+        var imgElement = document.querySelector(`#${category} img`);
+        imgElement.src = plotFilenames[category][currentImageIndexes[category]];
+    }
+</script>
 
 </body>
 </html>
