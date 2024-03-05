@@ -121,7 +121,16 @@ def ev_PAI(y_prediction, plot_path=None, suffix=""):
 
     # Plot nonoptimal vs. optimal
     sns.histplot(data=y_prediction, x="y_true",
-                 hue='received_treat', multiple="dodge")
+                 hue='received_treat', multiple="dodge",
+                 palette={"optimal": "green", "nonoptimal": "red"})
+    # Add mean of each group
+    mean_optimal = y_prediction[y_prediction['received_treat'] == 'optimal']['y_true'].mean()
+    mean_nonoptimal = y_prediction[y_prediction['received_treat'] == 'nonoptimal']['y_true'].mean()
+    plt.axvline(x=mean_optimal, color='green', linestyle='--')
+    plt.axvline(x=mean_nonoptimal, color='red', linestyle='--')
+    # Set x-axis ticks to integer
+    plt.gca().xaxis.set_major_formatter('{:.0f}'.format)
+    # Save plot
     plt.savefig(os.path.join(
         plot_path, ("optimal_vs_nonoptimal_" + suffix + ".png")))
     plt.close()
