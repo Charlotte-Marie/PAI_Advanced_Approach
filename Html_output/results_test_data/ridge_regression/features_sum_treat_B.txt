@@ -1,9 +1,0 @@
-	selection frequency	mean coefficient
-cat_col1_category3	4	-7.815681296850311
-cat_col1_category2	4	-6.704647242237671
-cat_col2_category2	4	-5.137820867677198
-binary_col4	4	-4.295310600901657
-binary_col2	4	1.670354969026896
-cat_col2_category3	3	-7.1884689116476155
-binary_col1	2	-4.664970751552436
-binary_col5	2	2.7623320515197545

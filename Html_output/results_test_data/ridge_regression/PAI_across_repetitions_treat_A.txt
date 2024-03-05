@@ -1,2 +1,0 @@
-	repeat	mean_abspai	mean_outcome_optimal	mean_outcome_nonoptimal	n_optimal	n_nonoptimal	t-test_statistic	t-test_p_value	cohens d	levene_W_statistic	levene_p_value	shapiro_opt_W_statistic	shapiro_opt_p_value	shapiro_nonopt_W_statistic	shapiro_nonopt_p_value	Welch_t_statistic	Welch_t_p_value
-0	0	5.24	8.64 (3.12)	11.65 (3.08)	25	26	3.4	0.0007	0.97	0.0	0.9897	0.97	0.6408	0.97	0.687	3.4	0.0007

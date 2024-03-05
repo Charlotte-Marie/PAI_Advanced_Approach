@@ -25,6 +25,7 @@ def choose_results_base_path():
 
 
 def run_script():
+    print("...is running...")
     current_script_path = os.path.realpath(__file__)
     script_path = os.path.join(os.path.dirname(
         current_script_path), "Main_PAI_advanced_approach.py")

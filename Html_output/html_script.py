@@ -62,8 +62,8 @@ template_data = {
     'column_names': column_names,
     'summary_values': summary_values,
     'model_performance_metrics': model_performance_metrics,
-    'figure_1_title': 'Distribution of the absolute PAI',
-    'figure_2_title': 'Distribution of outcome optimal and nonoptimal',
+#    'figure_1_title': 'Distribution of the absolute PAI',
+#    'figure_2_title': 'Distribution of outcome optimal and nonoptimal',
     'plot_filenames': {
         'pai_distribution': pai_distribution_files,
         'optimal_vs_nonoptimal': optimal_vs_nonoptimal_files,

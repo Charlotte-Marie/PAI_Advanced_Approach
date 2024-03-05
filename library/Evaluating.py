@@ -56,7 +56,7 @@ def calc_modelperformance_metrics(y_prediction):
 # %% Evaluate PAI
 
 
-def ev_PAI(y_prediction, plot_path=None, suffix=""):
+def ev_PAI(y_prediction, plot_path=None, suffix="", iteration_num=None):
     """ Evaluate the Personalized Advanatage Index (PAI) and generate visualizations.
 
     Parameters:
@@ -66,6 +66,8 @@ def ev_PAI(y_prediction, plot_path=None, suffix=""):
       The directory path to save generated plots. If None, plots will be saved in the current working directory.
     - suffix : str, optional, default: ""
       An additional suffix to append to the plot filenames for better identification.
+    - iteration_num : str, optional, default: None
+      Current number of iteration of the crossvalidation (to include in plot titles)
 
     Returns:
     - PAI_metrics : dict
@@ -105,6 +107,10 @@ def ev_PAI(y_prediction, plot_path=None, suffix=""):
     # Plot distribution of absolute PAIs
     sns.histplot(abspai)
     plt.xlabel("Absolute PAI")
+    # Set title
+    if iteration_num is not None:
+        plt.title(f"Distribution of the absolute PAI (rep. {iteration_num})")
+    # Save plot
     plt.savefig(os.path.join(
         plot_path, ("PAI_distribution_" + suffix + ".png")))
     plt.close()
@@ -130,6 +136,9 @@ def ev_PAI(y_prediction, plot_path=None, suffix=""):
     plt.axvline(x=mean_nonoptimal, color='red', linestyle='--')
     # Set x-axis ticks to integer
     plt.gca().xaxis.set_major_formatter('{:.0f}'.format)
+    # Set title
+    if iteration_num is not None:
+        plt.title(f"Distribution of outcome optimal and nonoptimal (rep. {iteration_num})")
     # Save plot
     plt.savefig(os.path.join(
         plot_path, ("optimal_vs_nonoptimal_" + suffix + ".png")))

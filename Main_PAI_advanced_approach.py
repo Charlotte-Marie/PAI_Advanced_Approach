@@ -322,23 +322,27 @@ def calc_PAI_metrics_across_reps(outcomes, key_PAI_df, n_folds):
         results_PAI_all.append(ev_PAI(
             y_true_PAI_all_folds,
             plot_path=os.path.join(PATH_RESULTS, "plots"),
-            suffix=f"{repeat}_all"))
+            suffix=f"{repeat}_all",
+            iteration_num=repeat))
 
         # Calculate Cohens d for 50 percent highest PAIs
         median = np.median(abs(y_true_PAI_all_folds["PAI"]))
         is_50_percent = abs(y_true_PAI_all_folds["PAI"]) > median
         results_PAI_50_perc.append(ev_PAI(y_true_PAI_all_folds[is_50_percent],
                                           plot_path=PATH_RESULTS_PLOTS,
-                                          suffix=f"{repeat}_50_perc"))
+                                          suffix=f"{repeat}_50_perc",
+                                          iteration_num=repeat))
 
         # Calculate Cohen´s d for single treatments
         results_PAI_treat_A.append(ev_PAI(y_true_PAI_all_folds[y_true_PAI_all_folds["group"] == "treatment_A"],
                                           plot_path=PATH_RESULTS_PLOTS,
-                                          suffix=f"{repeat}_treat_A"))
+                                          suffix=f"{repeat}_treat_A",
+                                          iteration_num=repeat))
 
         results_PAI_treat_B.append(ev_PAI(y_true_PAI_all_folds[y_true_PAI_all_folds["group"] == "treatment_B"],
                                           plot_path=PATH_RESULTS_PLOTS,
-                                          suffix=f"{repeat}_treat_B"))
+                                          suffix=f"{repeat}_treat_B",
+                                          iteration_num=repeat))
 
         results_PAI_all_df = pd.DataFrame(results_PAI_all)
         results_PAI_50_perc_df = pd.DataFrame(results_PAI_50_perc)
@@ -520,7 +524,7 @@ def summarize_features(outcomes, key_feat_names, key_feat_weights):
 # %% Run main script
 if __name__ == '__main__':
 
-    # # Run script via IDE (start)
+    # Run script via IDE (start)
     # working_directory = os.getcwd()
     # path_data = os.path.join(working_directory, "synthet_test_data")
     # path_results_base = working_directory
@@ -533,9 +537,9 @@ if __name__ == '__main__':
     # PATH_RESULTS = generate_and_create_results_path(path_results_base,
     #                                                 input_data_name = "sdfsdf",
     #                                                 OPTIONS = OPTIONS)
-    # # Run script via IDE (end)
+    # Run script via IDE (end)
 
-    #Run script via terminal or GUI (start)
+    # Run script via terminal or GUI (start)
     parser = argparse.ArgumentParser(
         description='Advanced script to calculate the PAI')
     parser.add_argument('--PATH_INPUT_DATA', type=str,
@@ -563,7 +567,8 @@ if __name__ == '__main__':
     PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
                                                     input_data_name=args.INPUT_DATA_NAME,
                                                     OPTIONS=OPTIONS)
-
+    # Run script via terminal or GUI (end)
+    
     # Set-up
     start_time = time.time()
     print('\nThe scikit-learn version is {}.'.format(sklearn.__version__))
@@ -634,4 +639,4 @@ if __name__ == '__main__':
 
     elapsed_time = time.time() - start_time
     print('\nThe time for running was {}.'.format(elapsed_time))
-    print('Results from were saved at {}.'.format(PATH_RESULTS))
+    print('Results were saved at {}.'.format(PATH_RESULTS))

@@ -1,0 +1,2 @@
+	n_t_test_sig	mean abspai	mean abspai SD	mean Cohens d	mean Cohens d SD	n_variance_viol	n_normal_viol
+0	17	5.231599999999999	0.46335023470372816	0.4226	0.2441213632601621	0	2
