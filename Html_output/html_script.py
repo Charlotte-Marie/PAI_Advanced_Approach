@@ -8,8 +8,9 @@ plots_directory = "Euer Path zu: ridge_regression/plots"
 
 # Organizing files in "plots"
 plot_files = os.listdir(plots_directory)
-pai_distribution_files = [file for file in plot_files if file.startswith("PAI_distribution")]
-optimal_vs_nonoptimal_files = [file for file in plot_files if file.startswith("optimal_vs_nonoptimal")]
+pai_distribution_files = [file for file in plot_files if file.startswith("PAI_distribution") and file.endswith("_all.png")]
+optimal_vs_nonoptimal_files = [file for file in plot_files if file.startswith("optimal_vs_nonoptimal") and file.endswith("_all.png")]
+
 # Sorting files in "plots"
 pai_distribution_files.sort()
 optimal_vs_nonoptimal_files.sort()
@@ -19,6 +20,11 @@ optimal_vs_nonoptimal_files = [os.path.join(plots_directory, file) for file in o
 # Read the PAI summary file
 with open(summary_path, 'r') as summary_file:
     lines = summary_file.readlines()
+n_sig_t_test = lines[1].strip().split('\t')[1]
+mean_cohens_d = round(float(lines[1].strip().split('\t')[4]), 2)
+mean_cohens_d_sd = round(float(lines[1].strip().split('\t')[5]), 2)
+n_variance_homogeneity_violated = lines[1].strip().split('\t')[6]
+n_normality_assumption_violated = lines[1].strip().split('\t')[7]
 
 # Extract column names and values
 column_names = lines[0].strip().split('\t')
@@ -36,19 +42,19 @@ with open(model_performance_path, 'r') as file:
 # Extracting specific metrics for the HTML template
 model_performance_metrics = {
     'Mean_MSE': [
-        model_performance_data['Mean_all_RMSE'],
-        model_performance_data['Mean_option_A_RMSE'],
-        model_performance_data['Mean_option_B_RMSE']
+        round(model_performance_data['Mean_all_RMSE'],2),
+        round(model_performance_data['Mean_option_A_RMSE'],2),
+        round(model_performance_data['Mean_option_B_RMSE'],2)
     ],
     'Mean_Cor': [
-        model_performance_data['Mean_all_correlation'],
-        model_performance_data['Mean_option_A_correlation'],
-        model_performance_data['Mean_option_B_correlation']
+        round(model_performance_data['Mean_all_correlation'],2),
+        round(model_performance_data['Mean_option_A_correlation'],2),
+        round(model_performance_data['Mean_option_B_correlation'],2)
     ],
     'Mean_MAE': [
-        model_performance_data['Mean_all_MAE'],
-        model_performance_data['Mean_option_A_MAE'],
-        model_performance_data['Mean_option_B_MAE']
+        round(model_performance_data['Mean_all_MAE'],2),
+        round(model_performance_data['Mean_option_A_MAE'],2),
+        round(model_performance_data['Mean_option_B_MAE'],2)
     ],
 }
 
@@ -59,11 +65,12 @@ template_data = {
     'sub_header_1': 'Evaluating the PAI across 100 repetitions of the CV',
     'sub_header_2': 'Evaluating the PAI: Results per repetition',
     'sub_header_3': 'Model performance across 100 x 5-fold CV',
-    'column_names': column_names,
-    'summary_values': summary_values,
+    'n_sig_t_test': n_sig_t_test,
+    'mean_cohens_d': mean_cohens_d,
+    'mean_cohens_d_sd': mean_cohens_d_sd,
+    'n_variance_homogeneity_violated': n_variance_homogeneity_violated,
+    'n_normality_assumption_violated': n_normality_assumption_violated,
     'model_performance_metrics': model_performance_metrics,
-#    'figure_1_title': 'Distribution of the absolute PAI',
-#    'figure_2_title': 'Distribution of outcome optimal and nonoptimal',
     'plot_filenames': {
         'pai_distribution': pai_distribution_files,
         'optimal_vs_nonoptimal': optimal_vs_nonoptimal_files,
@@ -80,6 +87,10 @@ template = Template(template_content)
 
 # Render the template with data
 html_content = template.render(template_data)
+
+# Save HTML content to a file
+with open('output.html', 'w') as f:
+    f.write(html_content)
 
 # Save HTML content to a file
 with open('output.html', 'w') as f:
