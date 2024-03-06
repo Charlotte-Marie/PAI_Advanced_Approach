@@ -57,22 +57,24 @@
 
     <h2>{{ sub_header_1 }}</h2>
 
-    <table>
-        <thead>
-            <tr>
-                {% for column_name in column_names %}
-                <th>{{ column_name }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            {% for value in summary_values %}
-                <td>{{ value }}</td>
-                {% endfor %}
-            </tr>
-        </tbody>
-    </table>
+<table>
+    <thead>
+        <tr>
+            <th>n Sig t-test</th>
+            <th>Mean Cohen's d</th>
+            <th>n Variance homogeneity violated</th>
+            <th>n Normality assumption violated</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ n_sig_t_test }}</td>
+            <td>{{ mean_cohens_d }} ({{ mean_cohens_d_sd }})</td>
+            <td>{{ n_variance_homogeneity_violated }}</td>
+            <td>{{ n_normality_assumption_violated }}</td>
+        </tr>
+    </tbody>
+</table>
 
     <h2>{{ sub_header_2 }}</h2>
 <div id="distribution-plots">
