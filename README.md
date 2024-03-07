@@ -2,10 +2,15 @@
 
 The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (2014; see References) and is a well-used approach to predict which one of several available treatment alternatives is optimal for an individual patient. The PAI has seen many different implementations. Here, we provide a low-bias pipeline for use by the scientific community.
 
-# Prepare the Script
+# Preparation
 
 1. Clone the repository
-2. Make sure all needed requirements for this script are installed.
+   
+   By cloning the repository, you replicate the entire repository, including all its files and folders, maintaining the same structure on your local computer. If you are not experienced in working with Github, we recommend to use the Github Desktop App: https://docs.github.com/en/desktop/adding-and-cloning-repositories/cloning-a-repository-from-github-to-github-desktop.
+
+   Alternatively, you have the option to manually download the required files and reconstruct the necessary folder structure. If you choose this method, please ensure that you download the following key components: **Main_PAI_advanced_approach.py**, **GUI.py**, the **library** folder, and, if you wish to experiment with the synthetically generated test data, also download the **synth_test_data** folder.
+   
+2. Make sure all needed requirements are installed.
 
    a) Manually
 
@@ -16,6 +21,7 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
     ```python
     conda env create -f "YOUR_PATH_TO_THE_ENVIRONMENT\Environment.yaml"
     ```
+    If you have not changed the location of the .yaml file after cloning the repository, *YOUR_PATH_TO_THE_ENVIRONMENT* equals *YOUR_PATH_TO_THE_REPOSITORY*
     
     c) Automatically for non-conda-users, run in the terminal:
     
@@ -24,8 +30,8 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
     ```
     
 
-# Run the script
-
+# Run the Main script
+To calculate the PAI with our low bias approach, the script **"Main_PAI_advanced_approach.py"** needs to be executed.
 To execute the script, there are three methods available, each requiring the same set of arguments to be provided:
 
 - PATH_INPUT_DATA → The path to the folder which contains features.txt, labels.txt, and groups.txt
@@ -40,7 +46,7 @@ To execute the script, there are three methods available, each requiring the sam
 Run the script "GUI.py". A small graphical user interface will launch automatically, allowing you to provide the arguments specified above as input.
 
 ## Run script via (anaconda) terminal
-a) Make sure that the section for running the script via IDE is commented
+a) Make sure that the section for running the script via IDE is commented in the script "Main_PAI_advanced_approach.py"
 
 ```python
     # Run script via IDE (start)
@@ -59,9 +65,9 @@ a) Make sure that the section for running the script via IDE is commented
     # Run script via IDE (end)
 ```
 
-b) Example: Open the terminal window in anaconda
+b) Open the terminal window in anaconda
 
-c) Example: Run the following command (Replace YOUR_PATH with your own paths)
+c) Run the following command (Replace YOUR_PATH with your own paths)
 
 ```python
 python "YOUR_PATH\Main_PAI_advanced_approach.py" --INPUT_DATA_NAME test --PATH_INPUT_DATA "YOUR_PATH/PAI_Advanced_Approach/synthet_test_data" --PATH_RESULTS_BASE "YOUR_RESULTS_PATH" --NUMBER_FOLDS 5 --NUMBER_REPETIT 1 --CLASSIFIER ridge_regression --HP_TUNING False
@@ -69,7 +75,7 @@ python "YOUR_PATH\Main_PAI_advanced_approach.py" --INPUT_DATA_NAME test --PATH_I
 
 ## Run script in your IDE (e.g., Spyder)
 
-a) Make sure that the section for running the script via terminal is commented
+a) Make sure that the section for running the script via terminal is commented in the script "Main_PAI_advanced_approach.py".
 
 ```python
     # Run script via terminal or GUI (start)
