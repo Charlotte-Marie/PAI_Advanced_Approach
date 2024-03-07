@@ -47,13 +47,15 @@ def set_options(classifier, number_folds=5, number_repetit=100, hp_tuning="False
     return OPTIONS
 
 
-def generate_and_create_results_path(path_results_base, input_data_name, OPTIONS):
+def generate_and_create_results_path(path_results_base, name_results_folder, OPTIONS):
     # Generate PATH_RESULTS
     if OPTIONS["hp_tuning"] == "True":
-        model_name = OPTIONS["classifier"] + "_" + "hp_tuned_grid"
+        final_name_results_folder = name_results_folder + "_" + \
+            OPTIONS["classifier"] + "_" + "hp_tuned_grid"
     else:
-        model_name = OPTIONS["classifier"]
-    PATH_RESULTS = os.path.join(path_results_base, input_data_name, model_name)
+        final_name_results_folder = name_results_folder + \
+            "_" + OPTIONS["classifier"]
+    PATH_RESULTS = os.path.join(path_results_base, final_name_results_folder)
     PATH_RESULTS_PLOTS = os.path.join(PATH_RESULTS, "plots")
     create_folder_to_save_results(PATH_RESULTS)
     create_folder_to_save_results(PATH_RESULTS_PLOTS)
@@ -348,7 +350,7 @@ if __name__ == '__main__':
     #                       hp_tuning = "false"
     #                       )
     # PATH_RESULTS = generate_and_create_results_path(path_results_base,
-    #                                                 input_data_name = "sdfsdf",
+    #                                                 name_results_folder = "sdfsdf",
     #                                                 OPTIONS = OPTIONS)
     # Run script via IDE (end)
 
@@ -356,11 +358,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Advanced script to calculate the PAI')
     parser.add_argument('--PATH_INPUT_DATA', type=str,
-                        help='Path to input data')
-    parser.add_argument('--INPUT_DATA_NAME', type=str,
-                        help='Name of input dataset')
+                        help='Specify path to folder containing input data')
+    parser.add_argument('--NAME_RESULTS_FOLDER', type=str,
+                        help='Specify name for results folder')
     parser.add_argument('--PATH_RESULTS_BASE', type=str,
-                        help='Path to save results')
+                        help='Specify directory for results folder')
     parser.add_argument('--NUMBER_FOLDS', type=int, default=5,
                         help='Number of folds in the cross-validation')
     parser.add_argument('--NUMBER_REPETIT', type=int, default=1,
@@ -378,7 +380,7 @@ if __name__ == '__main__':
                           hp_tuning=args.HP_TUNING
                           )
     PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
-                                                    input_data_name=args.INPUT_DATA_NAME,
+                                                    name_results_folder=args.NAME_RESULTS_FOLDER,
                                                     OPTIONS=OPTIONS)
     # Run script via terminal or GUI (end)
 

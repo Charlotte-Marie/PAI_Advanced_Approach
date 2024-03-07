@@ -31,7 +31,7 @@ def run_script():
         current_script_path), "Main_PAI_advanced_approach.py")
 
     # Get user-provided arguments from entry widgets
-    input_data_name = entry_input_data_name.get()
+    name_results_folder = entry_name_results_folder.get()
     path_input_data = entry_path_input_data.get()
     path_results_base = entry_path_results_base.get()
     number_folds = number_folds_var.get()
@@ -42,7 +42,7 @@ def run_script():
     # Construct the command
     command = [
         "python", script_path,
-        "--INPUT_DATA_NAME", input_data_name,
+        "--NAME_RESULTS_FOLDER", name_results_folder,
         "--PATH_INPUT_DATA", path_input_data,
         "--PATH_RESULTS_BASE", path_results_base,
         "--NUMBER_FOLDS", str(number_folds),
@@ -70,7 +70,8 @@ root = tk.Tk()
 root.title("Run Python Script with Arguments")
 
 # Input data path
-label_path_input_data = Label(root, text="Choose folder with input data:")
+label_path_input_data = Label(
+    root, text="Select the folder containing the input data:")
 label_path_input_data.pack(pady=5)
 entry_path_input_data = Entry(root, width=50)
 entry_path_input_data.pack(pady=5)
@@ -78,15 +79,16 @@ button_browse_input_data = Button(
     root, text="Browse", command=choose_input_data_path)
 button_browse_input_data.pack(pady=5)
 
-# Input data name
-label_input_data_name = Label(root, text="Name of input dataset:")
-label_input_data_name.pack(pady=5)
-entry_input_data_name = Entry(root, width=50)
-entry_input_data_name.pack(pady=5)
+# Name results folder
+label_name_results_folder = Label(
+    root, text="Specify a name for the results folder:")
+label_name_results_folder.pack(pady=5)
+entry_name_results_folder = Entry(root, width=50)
+entry_name_results_folder.pack(pady=5)
 
 # Path results base
 label_path_results_base = Label(
-    root, text="Choose folder that will contain the results-folder:")
+    root, text="Select a directory for the results folder:")
 label_path_results_base.pack(pady=5)
 entry_path_results_base = Entry(root, width=50)
 entry_path_results_base.pack(pady=5)
