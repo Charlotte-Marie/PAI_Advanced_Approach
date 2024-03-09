@@ -1,19 +1,27 @@
 from jinja2 import Template
 import os
+import re
 
 # Set paths
 summary_path = "Euer Path zu: PAI_summary_all.txt"
 model_performance_path = "Euer Path zu: modelperformance_summary.txt"
 plots_directory = "Euer Path zu: ridge_regression/plots"
 
-# Organizing files in "plots"
+#Extracting numbers from filenames in plots
+def extract_number(filename):
+    matches = re.search(r"(\d+)", filename)
+    return int(matches.group(1)) if matches else 0
+
+# Organizing and sorting files in "plots"
 plot_files = os.listdir(plots_directory)
 pai_distribution_files = [file for file in plot_files if file.startswith("PAI_distribution") and file.endswith("_all.png")]
 optimal_vs_nonoptimal_files = [file for file in plot_files if file.startswith("optimal_vs_nonoptimal") and file.endswith("_all.png")]
 
-# Sorting files in "plots"
-pai_distribution_files.sort()
-optimal_vs_nonoptimal_files.sort()
+# Interpreting numbers in plot images as integers instread of strings
+pai_distribution_files.sort(key=extract_number)
+optimal_vs_nonoptimal_files.sort(key=extract_number)
+
+# Prepend the full path for accessing the images (if necessary)
 pai_distribution_files = [os.path.join(plots_directory, file) for file in pai_distribution_files]
 optimal_vs_nonoptimal_files = [os.path.join(plots_directory, file) for file in optimal_vs_nonoptimal_files]
 
