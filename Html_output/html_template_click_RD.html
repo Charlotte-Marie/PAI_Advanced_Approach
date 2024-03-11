@@ -80,12 +80,12 @@
 <div id="distribution-plots">
     <!-- Adjusted content for sub-header 1: PAI Distribution plots -->
     <div id="pai_distribution" class="image-container">
-        <img src="{{ plot_filenames['pai_distribution'][0] }}" alt="PAI Distribution Plot" onclick="changeImage('pai_distribution')">
+        <img src="{{ plot_filenames['pai_distribution'][0] }}" alt="PAI Distribution Plot" onclick="changeImage()">
     </div>
     
     <!-- Adjusted content for sub-header 2: Optimal vs Nonoptimal plots -->
     <div id="optimal_vs_nonoptimal" class="image-container">
-        <img src="{{ plot_filenames['optimal_vs_nonoptimal'][0] }}" alt="Optimal vs Nonoptimal Plot" onclick="changeImage('optimal_vs_nonoptimal')">
+        <img src="{{ plot_filenames['optimal_vs_nonoptimal'][0] }}" alt="Optimal vs Nonoptimal Plot" onclick="changeImage()">
     </div>
 </div>
 
@@ -128,11 +128,15 @@
     var currentImageIndexes = {'pai_distribution': 0, 'optimal_vs_nonoptimal': 0};
     var plotFilenames = {{ plot_filenames | tojson | safe }};
     
-    function changeImage(category) {
+function changeImage() {
+    // Iterate through all categories and update their images
+    for (var category in currentImageIndexes) {
         currentImageIndexes[category] = (currentImageIndexes[category] + 1) % plotFilenames[category].length;
         var imgElement = document.querySelector(`#${category} img`);
         imgElement.src = plotFilenames[category][currentImageIndexes[category]];
     }
+}
+
 </script>
 
 </body>
