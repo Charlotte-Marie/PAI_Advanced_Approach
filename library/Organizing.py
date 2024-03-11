@@ -10,6 +10,8 @@ import sys
 import os
 
 # %%
+
+
 def create_folder_to_save_results(PATH_RESULTS):
     """
     Create folder to save results
@@ -28,5 +30,5 @@ def create_folder_to_save_results(PATH_RESULTS):
     if not os.path.exists(os.path.join(PATH_RESULTS)):
         os.makedirs(PATH_RESULTS)
     elif os.path.exists(os.path.join(PATH_RESULTS)):
-        print('Please use a new model name or delete existing analysis')
-        sys.exit("Execution stopped")
+        raise ValueError(
+            'Please use a new model name or delete existing analysis')

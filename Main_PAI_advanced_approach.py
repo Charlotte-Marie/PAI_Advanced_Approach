@@ -344,14 +344,18 @@ if __name__ == '__main__':
     # path_data = os.path.join(working_directory, "synthet_test_data")
     # path_results_base = working_directory
     # PATH_INPUT_DATA = path_data
-    # OPTIONS = set_options(classifier = "random_forest",
-    #                       number_folds = 5,
-    #                       number_repetit = 2,
-    #                       hp_tuning = "false"
+    # OPTIONS = set_options(classifier="ridge_regression",
+    #                       number_folds=5,
+    #                       number_repetit=2,
+    #                       hp_tuning="false"
     #                       )
-    # PATH_RESULTS = generate_and_create_results_path(path_results_base,
-    #                                                 name_results_folder = "sdfsdf",
-    #                                                 OPTIONS = OPTIONS)
+    # try:
+    #     PATH_RESULTS = generate_and_create_results_path(path_results_base,
+    #                                                     name_results_folder="results_test",
+    #                                                     OPTIONS=OPTIONS)
+    # except ValueError:
+    #     raise
+    #     sys.exit("Execution stopped")
     # Run script via IDE (end)
 
     # Run script via terminal or GUI (start)
@@ -379,9 +383,13 @@ if __name__ == '__main__':
                           number_repetit=args.NUMBER_REPETIT,
                           hp_tuning=args.HP_TUNING
                           )
-    PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
-                                                    name_results_folder=args.NAME_RESULTS_FOLDER,
-                                                    OPTIONS=OPTIONS)
+    try:
+        PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
+                                                        name_results_folder=args.NAME_RESULTS_FOLDER,
+                                                        OPTIONS=OPTIONS)
+    except ValueError:
+        raise
+        sys.exit("Execution stopped")
     # Run script via terminal or GUI (end)
 
     # Set-up

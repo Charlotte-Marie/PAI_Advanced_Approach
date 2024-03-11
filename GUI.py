@@ -8,6 +8,7 @@ import os
 import tkinter as tk
 from tkinter import Entry, Label, OptionMenu, IntVar, StringVar, Button, filedialog
 import subprocess
+import sys
 
 # %% Functions
 
@@ -52,15 +53,14 @@ def run_script():
     ]
 
     try:
-        result = subprocess.run(command, check=True,
-                                capture_output=True, text=True)
+        result = subprocess.check_output(command)
         print(f"Command Output: {result.stdout}")
         print(f"Command Error: {result.stderr}")
     except subprocess.CalledProcessError as e:
         # Print more details about the error
-        print(f"Error: {e}")
+        # print(f"Error: {e.output}")
         print(f"Return Code: {e.returncode}")
-        print(f"Command: {' '.join(command)}")
+        # print(f"Command: {' '.join(command)}"
 
     root.destroy()
 
