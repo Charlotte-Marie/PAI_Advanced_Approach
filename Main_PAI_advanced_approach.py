@@ -173,7 +173,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, OPTIONS):
             clf_elastic = grid_en.best_estimator_
             # clf_elastic = ElasticNetCV(cv = 5, fit_intercept=False,
             #                                          max_iter=1000, tol=0.0001, random_state=random_state_seed, selection='cyclic')
-        else:
+        elif OPTIONS["hp_tuning"] == "False":
             clf_elastic = ElasticNet(alpha=1.0, l1_ratio=0.5, fit_intercept=False,
                                      max_iter=1000, tol=0.0001, random_state=random_state_seed, selection='cyclic')
         sfm = SelectFromModel(clf_elastic, threshold="mean")
@@ -205,7 +205,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, OPTIONS):
                 info_per_treat[treatment]["background_ridge_hp"] = background_hp_tuning_ridge
                 clf = grid_ridge.best_estimator_
                 # clf = RidgeCV(fit_intercept = False)
-            else:
+            elif OPTIONS["hp_tuning"] == "False":
                 clf = Ridge(fit_intercept=False)
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.coef_
