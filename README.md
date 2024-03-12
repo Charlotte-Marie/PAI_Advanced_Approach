@@ -2,6 +2,17 @@
 
 The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (2014; see References) and is a well-used approach to predict which one of several available treatment alternatives is optimal for an individual patient. The PAI has seen many different implementations. Here, we provide a low-bias pipeline for use by the scientific community.
 
+# Getting Started
+
+Follow these steps to quickly set up the program and analyze data using the provided example:
+
+1. **Clone this repository** to your local machine.
+2. Make sure you have installed the packages numpy, pandas, and scikit.
+3. **Open and run the script "[GUI.py](http://gui.py/)".**
+    1. *Folder with input data*: select "synthet_test_data" folder for using example data.
+    2. Select name and location of results-folder. Leave analysis parameters at default.
+4. **View results**: after running the script, plots and summary statistics can be found in the specified results-folder
+
 # Preparation
 
 1. Clone the repository
@@ -42,10 +53,10 @@ To execute the script, there are three methods available, each requiring the sam
 - CLASSIFIER → Choose ridge_regression OR random_forest
 - HP_TUNING → Choose True OR False
 
-## Run script via Graphical User Interface (most simple)
+## 1. Run script via Graphical User Interface (most simple)
 Run the script "GUI.py". A small graphical user interface will launch automatically, allowing you to provide the arguments specified above as input.
 
-## Run script via (anaconda) terminal
+## 2. Run script via (anaconda) terminal
 a) Make sure that the section for running the script via IDE is commented in the script "Main_PAI_advanced_approach.py"
 
 ```python
@@ -67,13 +78,13 @@ a) Make sure that the section for running the script via IDE is commented in the
 
 b) Open the terminal window in anaconda
 
-c) Run the following command (Replace YOUR_PATH with your own paths)
+c) Run the following command (Replace YOUR_PATH and YOUR_RESULTS_PATH with your own paths)
 
 ```python
 python "YOUR_PATH\Main_PAI_advanced_approach.py" --INPUT_DATA_NAME test --PATH_INPUT_DATA "YOUR_PATH/PAI_Advanced_Approach/synthet_test_data" --PATH_RESULTS_BASE "YOUR_RESULTS_PATH" --NUMBER_FOLDS 5 --NUMBER_REPETIT 1 --CLASSIFIER ridge_regression --HP_TUNING False
 ```
 
-## Run script in your IDE (e.g., Spyder)
+## 3. Run script in your IDE (e.g., Spyder)
 
 a) Make sure that the section for running the script via terminal is commented in the script "Main_PAI_advanced_approach.py".
 
