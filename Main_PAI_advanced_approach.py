@@ -335,11 +335,68 @@ def aggregate_and_save_results(outcomes):
     feat_sum_treat_B.to_csv(os.path.join(
         PATH_RESULTS, "features_sum_treat_B.txt"), sep="\t", na_rep="NA")
 
+# %% Functions to specify mode of execution
+
+def run_via_ide():
+    working_directory = os.getcwd()
+    path_data = os.path.join(working_directory, "synthet_test_data")
+    path_results_base = working_directory
+    PATH_INPUT_DATA = path_data
+    OPTIONS = set_options(classifier="ridge_regression",
+                          number_folds=5,
+                          number_repetit=2,
+                          hp_tuning="false"
+                          )
+    try:
+        PATH_RESULTS = generate_and_create_results_path(path_results_base,
+                                                        name_results_folder="results_test",
+                                                        OPTIONS=OPTIONS)
+    except ValueError:
+        raise
+        sys.exit("Execution stopped")
+    
+    return PATH_INPUT_DATA, OPTIONS, PATH_RESULTS
+
+def run_via_terminal_or_gui():
+    parser = argparse.ArgumentParser(
+        description='Advanced script to calculate the PAI')
+    parser.add_argument('--PATH_INPUT_DATA', type=str,
+                        help='Specify path to folder containing input data')
+    parser.add_argument('--NAME_RESULTS_FOLDER', type=str,
+                        help='Specify name for results folder')
+    parser.add_argument('--PATH_RESULTS_BASE', type=str,
+                        help='Specify directory for results folder')
+    parser.add_argument('--NUMBER_FOLDS', type=int, default=5,
+                        help='Number of folds in the cross-validation')
+    parser.add_argument('--NUMBER_REPETIT', type=int, default=1,
+                        help='Number of repetitions of the cross-validation')
+    parser.add_argument('--CLASSIFIER', type=str,
+                        help='Classifier to use, set ridge_regression or random_forest')
+    parser.add_argument('--HP_TUNING', type=str, default="False",
+                        help='Should hyperparameter tuning be applied? Set False or True')
+    args = parser.parse_args()
+
+    PATH_INPUT_DATA = args.PATH_INPUT_DATA
+    OPTIONS = set_options(classifier=args.CLASSIFIER,
+                          number_folds=args.NUMBER_FOLDS,
+                          number_repetit=args.NUMBER_REPETIT,
+                          hp_tuning=args.HP_TUNING
+                          )
+    try:
+        PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
+                                                        name_results_folder=args.NAME_RESULTS_FOLDER,
+                                                        OPTIONS=OPTIONS)
+    except ValueError:
+        raise
+        sys.exit("Execution stopped")
+    
+    return PATH_INPUT_DATA, OPTIONS, PATH_RESULTS
 
 # %% Run main script
 if __name__ == '__main__':
 
-    # Run script via IDE (start)
+    # Run script via IDE
+    # PATH_INPUT_DATA, OPTIONS, PATH_RESULTS = run_via_ide() # Uncomment this line if ran via IDE
     # working_directory = os.getcwd()
     # path_data = os.path.join(working_directory, "synthet_test_data")
     # path_results_base = working_directory
@@ -359,6 +416,7 @@ if __name__ == '__main__':
     # Run script via IDE (end)
 
     # Run script via terminal or GUI (start)
+    # PATH_INPUT_DATA, OPTIONS, PATH_RESULTS = run_via_terminal_or_gui()
     parser = argparse.ArgumentParser(
         description='Advanced script to calculate the PAI')
     parser.add_argument('--PATH_INPUT_DATA', type=str,
