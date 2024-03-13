@@ -51,16 +51,11 @@ def run_script():
         "--CLASSIFIER", classifier,
         "--HP_TUNING", hp_tuning
     ]
-
-    try:
-        result = subprocess.check_output(command)
-        print(f"Command Output: {result.stdout}")
-        print(f"Command Error: {result.stderr}")
+    try: 
+        output = subprocess.check_output(command, text = True)
+        print(output)
     except subprocess.CalledProcessError as e:
-        # Print more details about the error
-        # print(f"Error: {e.output}")
-        print(f"Return Code: {e.returncode}")
-        # print(f"Command: {' '.join(command)}"
+        print(f"Command failed with return code {e.returncode}")
 
     root.destroy()
 
