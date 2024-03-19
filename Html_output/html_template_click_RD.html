@@ -5,29 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
     <style>
-        /* Add your CSS styles here if needed */
-
-        h1, h2, h3, h4, h5, h6 {
-                margin-left: 20%;
-            }
-
+        /* Base styling */
         body {
             font-family: 'Calibri', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
         }
 
+        h1, h2, h3, h4, h5, h6 {
+            margin-left: 20%; 
+            color: #444;
+        }
 
         /* Style for image containers */
         #distribution-plots {
             display: flex;
-            flex-direction: row;
+            flex-wrap: wrap;
             justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
         }
 
         .image-container {
-            margin-right: 60px;
             text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out;
         }
 
+        .image-container:hover {
+            transform: scale(1.05);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
         /* Reduce space between title and figures */
         .image-container h3 {
             margin-bottom: 5px;
@@ -40,15 +57,30 @@
             border-collapse: collapse;
             width: 100%;
         }
+        
         th, td {
             border: 1px solid black;
             padding: 8px;
             text-align: left;
         }
+        
         th {
-            background-color: #f2f2f2;
+            background-color: #4472C4;
+            color: white;
+        }
+        
+        td {
+            background-color: #CFD5EA; /* Lighter Blue for the cell backgrounds */
         }
 
+        tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+
+        tr:hover {
+            background-color: #ddf0ff; /* Light blue for hover to improve visibility */
+        }
+        
         /* Responsive styling */
         @media (max-width: 768px) {
             #distribution-plots {
@@ -59,6 +91,10 @@
             .image-container {
                 margin-right: 0;
                 margin-bottom: 20px;
+            }
+
+            table {
+                max-width: 90%; /* Adjusted for better mobile viewing */
             }
         }
     </style>
