@@ -647,12 +647,12 @@ if __name__ == '__main__':
      summary_path = os.path.join(PATH_RESULTS, "PAI_summary_all.txt")
      model_performance_path = os.path.join(PATH_RESULTS, "modelperformance_summary.txt")
      plots_directory = os.path.join(PATH_RESULTS, "plots")
-     PAI_to_HTML(summary_path, model_performance_path, plots_directory)
-     html_output_path = os.path.join(PATH_RESULTS, "HTML_output/output.html")
-     if os.path.exists(html_output_path):
-         print("HTML output successfully created and accessible in HTML_output folder")
-     else: 
+     try: 
+         PAI_to_HTML(summary_path, model_performance_path, plots_directory)
+         print("HTML output successfully created and saved to HTML_output folder")
+     except:
          print("Failed to create HTML output")
+
 
      elapsed_time = time.time() - start_time
      print('\nThe time for running was {}.'.format(elapsed_time))
