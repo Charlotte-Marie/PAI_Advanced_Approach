@@ -7,6 +7,15 @@
     <style>
         /* Add your CSS styles here if needed */
 
+        h1, h2, h3, h4, h5, h6 {
+                margin-left: 20%;
+            }
+
+        body {
+            font-family: 'Calibri', sans-serif;
+        }
+
+
         /* Style for image containers */
         #distribution-plots {
             display: flex;
@@ -15,7 +24,7 @@
         }
 
         .image-container {
-            margin-right: 20px;
+            margin-right: 60px;
             text-align: center;
         }
 
@@ -25,6 +34,9 @@
         }
 
         table {
+            max-width: 50%;
+            margin-left: auto;
+            margin-right: auto;
             border-collapse: collapse;
             width: 100%;
         }
@@ -61,7 +73,7 @@
     <thead>
         <tr>
             <th>n Sig t-test</th>
-            <th>Mean Cohen's d</th>
+            <th>Mean Cohen's d (SD)</th>
             <th>n Variance homogeneity violated</th>
             <th>n Normality assumption violated</th>
         </tr>
