@@ -11,6 +11,7 @@ from scipy import stats
 import os
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import pandas as pd
 
 # %% Evaluate PAI
@@ -70,6 +71,9 @@ def ev_PAI(y_prediction, plot_path=None, suffix="", iteration_num=None):
     # Set title
     if iteration_num is not None:
         plt.title(f"Distribution of the absolute PAI (rep. {iteration_num})")
+    #Ensure whole numbers
+    plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    plt.gca().yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     # Save plot
     plt.savefig(os.path.join(
         plot_path, ("PAI_distribution_" + suffix + ".png")))
@@ -78,8 +82,6 @@ def ev_PAI(y_prediction, plot_path=None, suffix="", iteration_num=None):
     # Extract values of patients receiving their optimal vs. nonoptimal treatment
     y_prediction['received_treat'] = np.where(
         y_prediction['PAI'] > 0, 'nonoptimal', 'optimal')
-    obs_outcomes_optimal = []
-    obs_outcomes_nonoptimal = []
     obs_outcomes_optimal = y_prediction[y_prediction['received_treat']
                                         == "optimal"]['y_true'].tolist()
     obs_outcomes_nonoptimal = y_prediction[y_prediction['received_treat']
@@ -96,12 +98,13 @@ def ev_PAI(y_prediction, plot_path=None, suffix="", iteration_num=None):
                                    == 'nonoptimal']['y_true'].mean()
     plt.axvline(x=mean_optimal, color='green', linestyle='--')
     plt.axvline(x=mean_nonoptimal, color='red', linestyle='--')
-    # Set x-axis ticks to integer
-    plt.gca().xaxis.set_major_formatter('{:.0f}'.format)
     # Set title
     if iteration_num is not None:
         plt.title(
             f"Distribution of outcome optimal and nonoptimal (rep. {iteration_num})")
+    #Ensure whole numbers
+    plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    plt.gca().yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     # Save plot
     plt.savefig(os.path.join(
         plot_path, ("optimal_vs_nonoptimal_" + suffix + ".png")))
