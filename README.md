@@ -2,11 +2,16 @@
 
 The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (2014; see References) and is a well-used approach to predict which one of several available treatment alternatives is optimal for an individual patient. The PAI has seen many different implementations. Here, we provide a low-bias pipeline for use by the scientific community.
 
-|:memo: Getting Started|
-|---------------------------------------------------------------------------------------------------------------------------------------|
-|Follow these steps to quickly set up the program and run a first analysis using the provided example data:<br/><br/>1. **Clone this repository** to your local machine.<br/>2. Make sure you have installed the packages numpy, pandas, and scikit.<br/>3. **Open and run the script "[GUI.py](http://gui.py/)".** <br/>   1. *Folder with input data*: select "synthet_test_data" folder for using example data.<br/>   2. Select name and location of results-folder. Leave analysis parameters at default.<br/>4. **View results**: after running the script, plots and summary statistics can be found in the specified results-folder|
+> ## **ℹ️ Getting Started** 
+> Follow these steps to quickly set up the program and run a first analysis using the provided example data:
+> 1. **Clone this repository** to your local machine.
+> 2. Make sure you have installed the packages numpy, pandas, and scikit.
+> 3. **Open and run the script "[GUI.py](http://gui.py/)".**
+>    1. *Folder with input data*: select "synthet_test_data" folder for using example data.
+>    2. Select name and location of results-folder. Leave analysis parameters at default.
+> 4. **View results**: after running the script, plots and summary statistics can be found in the specified results-folder.
 
-> [!NOTE]  
+> [!NOTE]
 > Follow these steps to quickly set up the program and run a first analysis using the provided example data:
 > 1. **Clone this repository** to your local machine.
 > 2. Make sure you have installed the packages numpy, pandas, and scikit.
