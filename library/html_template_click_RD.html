@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* Base styling */
+        body {
+            font-family: 'Calibri', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            margin-left: 20%;
+            margin-right: 20%;
+            padding: 20px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            margin-left: 0%; 
+            color: #444;
+        }
+
+        /* Style for image containers */
+        #distribution-plots {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-container {
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .image-container:hover {
+            transform: scale(1.05);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* Reduce space between title and figures */
+        .image-container h3 {
+            margin-bottom: 5px;
+        }
+
+        table {
+            max-width: 70%;
+            margin-left: auto;
+            margin-right: auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #4472C4;
+            color: white;
+        }
+        
+        td {
+            background-color: #CFD5EA; /* Lighter Blue for the cell backgrounds */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+
+        tr:hover {
+            background-color: #ddf0ff; /* Light blue for hover to improve visibility */
+        }
+        
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            #distribution-plots {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .image-container {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+
+            table {
+                max-width: 90%; /* Adjusted for better mobile viewing */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>{{ main_heading }}</h1>
+
+    <h2>{{ sub_header_1 }}</h2>
+    
+    <p>{{ explanation_1 }}</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Number of repetitions with significant t-test</th>
+            <th>Mean Cohen's d (SD)</th>
+            <th>Number of repetitions with violation of variance homogeneity </th>
+            <th>Number of repetitions with violation of normality assumption </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ n_sig_t_test }}</td>
+            <td>{{ mean_cohens_d }} ({{ mean_cohens_d_sd }})</td>
+            <td>{{ n_variance_homogeneity_violated }}</td>
+            <td>{{ n_normality_assumption_violated }}</td>
+        </tr>
+    </tbody>
+</table>
+
+    <h2>{{ sub_header_2 }}</h2>
+    
+    <p>{{ explanation_2 }}</p>
+<div id="distribution-plots">
+    <!-- Adjusted content for sub-header 1: PAI Distribution plots -->
+    <div id="pai_distribution" class="image-container">
+        <img src="{{ plot_filenames['pai_distribution'][0] }}" alt="PAI Distribution Plot" onclick="changeImage()">
+    </div>
+    
+    <!-- Adjusted content for sub-header 2: Optimal vs Nonoptimal plots -->
+    <div id="optimal_vs_nonoptimal" class="image-container">
+        <img src="{{ plot_filenames['optimal_vs_nonoptimal'][0] }}" alt="Optimal vs Nonoptimal Plot" onclick="changeImage()">
+    </div>
+</div>
+
+<h2>{{ sub_header_3 }}</h2>
+<p>{{ explanation_3 }}</p>
+<table>
+    <thead>
+        <tr>
+            <th>Measure</th>
+            <th>Both Treatments</th>
+            <th>Treatment A</th>
+            <th>Treatment B</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Mean MSE</td>
+            <td>{{ model_performance_metrics.Mean_MSE[0] }}</td>
+            <td>{{ model_performance_metrics.Mean_MSE[1] }}</td>
+            <td>{{ model_performance_metrics.Mean_MSE[2] }}</td>
+        </tr>
+        <tr>
+            <td>Mean Correlation</td>
+            <td>{{ model_performance_metrics.Mean_Cor[0] }}</td>
+            <td>{{ model_performance_metrics.Mean_Cor[1] }}</td>
+            <td>{{ model_performance_metrics.Mean_Cor[2] }}</td>
+        </tr>
+        <tr>
+            <td>Mean MAE</td>
+            <td>{{ model_performance_metrics.Mean_MAE[0] }}</td>
+            <td>{{ model_performance_metrics.Mean_MAE[1] }}</td>
+            <td>{{ model_performance_metrics.Mean_MAE[2] }}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+    <p>{{ additional_text }}</p>
+
+<script>
+    var currentImageIndexes = {'pai_distribution': 0, 'optimal_vs_nonoptimal': 0};
+    var plotFilenames = {{ plot_filenames | tojson | safe }};
+    
+function changeImage() {
+    // Iterate through all categories and update their images
+    for (var category in currentImageIndexes) {
+        currentImageIndexes[category] = (currentImageIndexes[category] + 1) % plotFilenames[category].length;
+        var imgElement = document.querySelector(`#${category} img`);
+        imgElement.src = plotFilenames[category][currentImageIndexes[category]];
+    }
+}
+
+</script>
+
+</body>
+</html>
