@@ -9,18 +9,14 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
 > 3. **Open and run the script "[GUI.py](http://gui.py/)".**
 >    1. *Folder with input data*: select "synthet_test_data" folder for using example data.
 >    2. Select name and location of results-folder. Leave analysis parameters at default.
-> 4. **View results**: after running the script, plots and summary statistics can be found in the specified results-folder.
+> 4. **View results**: after running the script, a overview html-file as well as more detailed summary statistics can be found in the specified results-folder.
+>    
+>    <img
+     src="assets/Bild1.png"
+     alt="htm_output"
+     style="display: inline-block; margin: 0 auto; height: 400px; max-width: 300px">
 
-> [!NOTE]
-> Follow these steps to quickly set up the program and run a first analysis using the provided example data:
-> 1. **Clone this repository** to your local machine.
-> 2. Make sure you have installed the packages numpy, pandas, and scikit.
-> 3. **Open and run the script "[GUI.py](http://gui.py/)".**
->    1. *Folder with input data*: select "synthet_test_data" folder for using example data.
->    2. Select name and location of results-folder. Leave analysis parameters at default.
-> 4. **View results**: after running the script, plots and summary statistics can be found in the specified results-folder.
-
-# Preparation
+# Prepare the script
 
 1. Clone the repository
    
@@ -46,14 +42,37 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
     ```python
     pip install -r "requirements.txt".
     ```
+
+# Prepare the input data
+
+Before running the script, make sure you have three files ready: features.txt, labels.txt, and groups.txt. These files should contain information about features, post-treatment severity, and group membership for all patients.
+
+**General requirements**:
+
+- Put all three files in one folder (and specify the folder path as INPUT_DATA_PATH)
+- Make sure that all files are tab-delimited text files (.txt). Usually, tab-delimited text can easily be exported from statistic programs or excel.
+- Make sure that a period is used as a decimal separator and avoid special characters in variable names.
+- Make sure that variable names are on the top line.
+
+**Specific requirements:**
+
+- **features.txt**: Certain processes in the script hinge on distinguishing feature types (binary, categorical, or dimensional). To facilitate the detection of feature type, recode binary variables as 0.5 and -0.5 and provide categorial variables in string format.
+
+- **groups.txt**: Make sure that it is a binary variable. The format does not matter (string or numerical).
+
+**Address missing values:**
+
+- Do not impute missing values in advance, as this could lead to data leakage.
+- The script autonomously handles imputation for missing values marked as NA. Ensure that missing values are denoted appropriately.
+
     
 
-# Run the Main script
+# Run the script
 To calculate the PAI with our low bias approach, the script **"Main_PAI_advanced_approach.py"** needs to be executed.
-To execute the script, there are three methods available, each requiring the same set of arguments to be provided:
+To execute the script, there are **three methods** available, each requiring the same set of arguments to be provided:
 
 - PATH_INPUT_DATA → The path to the folder which contains features.txt, labels.txt, and groups.txt
-- INPUT_DATA_NAME → Name of input data or more general string that will be part of the name of the results folder
+- NAME_RESULTS_FOLDER → Name of input data or more general string that will be part of the name of the results folder
 - RESULTS_PATH_BASE → Path to store the results folder
 - NUMBER_FOLDS → Number of folds in the cross-validation (typically 5 or 10)
 - NUMBER_ITERIT → Number of repetitions of the cross-validation (typically 100, choose 1 for a first try)
@@ -64,109 +83,85 @@ To execute the script, there are three methods available, each requiring the sam
 Run the script "GUI.py". A small graphical user interface will launch automatically, allowing you to provide the arguments specified above as input.
 
 ## 2. Run script via (anaconda) terminal
-a) Make sure that the section for running the script via IDE is commented in the script "Main_PAI_advanced_approach.py"
+
+a) Open the terminal window in anaconda
+
+b) Run the following command (Replace YOUR_PATH and YOUR_RESULTS_PATH with your own paths)
 
 ```python
-    # Run script via IDE (start)
-    # working_directory = os.getcwd()
-    # path_data = os.path.join(working_directory, "synthet_test_data")
-    # path_results_base = working_directory
-    # PATH_INPUT_DATA = path_data
-    # OPTIONS = set_options(classifier = "random_forest",
-    #                       number_folds = 5,
-    #                       number_repetit = 1,
-    #                       hp_tuning = "false"
-    #                       )
-    # PATH_RESULTS = generate_and_create_results_path(path_results_base,
-    #                                                 input_data_name = "test_data",
-    #                                                 OPTIONS = OPTIONS)
-    # Run script via IDE (end)
-```
-
-b) Open the terminal window in anaconda
-
-c) Run the following command (Replace YOUR_PATH and YOUR_RESULTS_PATH with your own paths)
-
-```python
-python "YOUR_PATH\Main_PAI_advanced_approach.py" --INPUT_DATA_NAME test --PATH_INPUT_DATA "YOUR_PATH/PAI_Advanced_Approach/synthet_test_data" --PATH_RESULTS_BASE "YOUR_RESULTS_PATH" --NUMBER_FOLDS 5 --NUMBER_REPETIT 1 --CLASSIFIER ridge_regression --HP_TUNING False
+python "YOUR_PATH\Main_PAI_advanced_approach.py" --NAME_RESULTS_FOLDER test --PATH_INPUT_DATA "YOUR_PATH/PAI_Advanced_Approach/synthet_test_data" --PATH_RESULTS_BASE "YOUR_RESULTS_PATH" --NUMBER_FOLDS 5 --NUMBER_REPETIT 1 --CLASSIFIER ridge_regression --HP_TUNING False
 ```
 
 ## 3. Run script in your IDE (e.g., Spyder)
 
-a) Make sure that the section for running the script via terminal is commented in the script "Main_PAI_advanced_approach.py".
+a) Change the arguments within the script
 
 ```python
-    # Run script via terminal or GUI (start)
-    # parser = argparse.ArgumentParser(
-    #     description='Advanced script to calculate the PAI')
-    # parser.add_argument('--PATH_INPUT_DATA', type=str,
-    #                     help='Path to input data')
-    # parser.add_argument('--INPUT_DATA_NAME', type=str,
-    #                     help='Name of input dataset')
-    # parser.add_argument('--PATH_RESULTS_BASE', type=str,
-    #                     help='Path to save results')
-    # parser.add_argument('--NUMBER_FOLDS', type=int,
-    #                     help='Number of folds in the cross-validation')
-    # parser.add_argument('--NUMBER_REPETIT', type=int,
-    #                     help='Number of repetitions of the cross-validation')
-    # parser.add_argument('--CLASSIFIER', type=str,
-    #                     help='Classifier to use, set ridge_regression or random_forest')
-    # parser.add_argument('--HP_TUNING', type=str,
-    #                     help='Should hyperparameter tuning be applied? Set False or True')
-    # args = parser.parse_args()
-
-    # PATH_INPUT_DATA = args.PATH_INPUT_DATA
-    # OPTIONS = set_options(classifier=args.CLASSIFIER,
-    #                       number_folds=args.NUMBER_FOLDS,
-    #                       number_repetit=args.NUMBER_REPETIT,
-    #                       hp_tuning=args.HP_TUNING
-    #                       )
-    # PATH_RESULTS = generate_and_create_results_path(path_results_base=args.PATH_RESULTS_BASE,
-    #                                                 input_data_name=args.INPUT_DATA_NAME,
-    #                                                 OPTIONS=OPTIONS)
-    # Run script via terminal or GUI (end)
+# Change the arguments here, when running script in IDE
+args = parser.parse_args([
+   '--PATH_INPUT_DATA', os.path.join(working_directory, "synthet_test_data"),
+   '--NAME_RESULTS_FOLDER', "test_run",
+   '--PATH_RESULTS_BASE', working_directory,
+   '--CLASSIFIER', 'random_forest',
+   '--NUMBER_FOLDS', '5',
+   '--NUMBER_REPETITIONS', '1',
+        ])
 ```
 
-b) Set the arguments needed in the script
+b) Run the script
 
-```python
-    working_directory = os.getcwd()
-    path_data = os.path.join(working_directory, "synthet_test_data")
-    path_results_base = working_directory
-    PATH_INPUT_DATA = path_data
-    OPTIONS = set_options(classifier = "random_forest",
-                          number_folds = 5,
-                          number_repetit = 1,
-                          hp_tuning = "false"
-                          )
-    PATH_RESULTS = generate_and_create_results_path(path_results_base,
-                                                    input_data_name = "test_data",
-                                                    OPTIONS = OPTIONS)
-```
 
-c) Run the script
+# Interpret the results
+<details>
+<summary> Please find here more information about the created output files here </summary>
 
-# Prepare Input Data
+## General overview
 
-Before running the script, make sure you have three files ready: features.txt, labels.txt, and groups.txt. These files should contain information about features, post-treatment severity, and group membership for all patients.
+- HTML-file.html
+    
+    Nice overview of most important results
+    
 
-General requirements:
+## Evaluate the usefulness of the PAI
 
-- Put all three files in one folder (and specify the folder path as INPUT_DATA_PATH)
-- Make sure that all files are tab-delimited text files (.txt). Usually, tab-delimited text can easily be exported from statistic programs or excel.
-- Make sure that a period is used as a decimal separator and avoid special characters in variable names.
-- Make sure that variable names are on the top line.
+The usefulness of the PAI is retrospectively evaluated by comparing the post-treatment severity of patients that received their optimal treatment vs. those receiving their nonoptimal treatment (according to the PAI). This is typically done with an independent one-sided t-test. All relevant metrics, including the results of tests for the assumptions required by the t-test, and the results of a more robust test, the Welch-test, are presented in the following files:
 
-Specific requirements:
+- PAI_across_repetitions…txt
 
-features.txt: Certain processes in the script hinge on distinguishing feature types (binary, categorical, or dimensional). To facilitate the detection of feature type, recode binary variables as 0.5 and -0.5 and provide categorial variables in string format.
+   **PAI evaluation metrics** for each repetition of the repeated k-fold cross-validation
+  
+- PAI_summary…txt
+  
+  **mean** PAI evaluation metrics across repetitions of the repeated k-fold cross-validation
+    
 
-groups.txt: Make sure that it is a binary variable. The format does not matter (string or numerical).
+Please note that both PAI evaluation outputs are calculated for 4 different subgroups of patients, as indicated by a suffix in the file name:
 
-Address missing values:
+- _all: all patients
+- *50_perc:* 50% of Patients with the highest absolute PAI
+- *treat_A: patients that facutally receied treatment A*
+- treat_B: patients that facutally received treatment B
 
-- Do not impute missing values in advance, as this could lead to data leakage.
-- The script autonomously handles imputation for missing values marked as NA. Ensure that missing values are denoted appropriately.
+Moreover, two types of plots are created, depicting the distribution of post-treatment severity scores for the optimal vs. nonoptimal group and the general distribution of the absolute PAI
+
+## Evaluate the models underlying the PAI
+
+- modelperformance_across_folds.txt
+    
+    model performance metrics for each fold in the repeated k-fold cross-validation (e.g., RMSE)
+    
+- modelperformance_summary.txt
+    
+    **mean** model performance metrics across folds (e.g., **mean** RMSE)
+    
+
+## Get more insight into the models underlying the PAI
+
+These files show the feature selection frequency and mean feature importance across folds:
+
+- features_sum_treat_A.txt
+- features_sum_treat_B.txt
+</details>
 
 # Empirical and theoretical foundations of design choices
 
