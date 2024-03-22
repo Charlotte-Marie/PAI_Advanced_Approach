@@ -12,12 +12,14 @@ import re
 # %% Functions
 
 
-def PAI_to_HTML(PATH_RESULTS, plots_directory, OPTIONS):
+def PAI_to_HTML(PATH_RESULTS, plots_directory, number_folds, number_repetit):
     """ This function creates a nice htlm-output from the results of the script "Main_PAI_advanced_approach.py"
 
     Parameters:
     - PATH_RESULTS: Directory with PAI_summary_all.txt and modelperformance_summary.txt
     - plots_directory: Directory containing the plots PAI_distribution and optimal vs. nonoptimal
+    - number_folds: Number of folds in the cross-validation
+    - number_repetit: Number of repetititons of the cross-validation
 
     """
 
@@ -94,11 +96,11 @@ def PAI_to_HTML(PATH_RESULTS, plots_directory, OPTIONS):
     template_data = {
         'title': 'PAI Report',
         'main_heading': 'Report Personalized Advantage Index',
-        'sub_header_1': f'Evaluating the PAI: Results across {OPTIONS["number_repetit"]} repetitions of {OPTIONS["number_folds"]}-fold cross-validation',
+        'sub_header_1': f'Evaluating the PAI: Results across {number_repetit} repetitions of {number_folds}-fold cross-validation',
         'explanation_1': "To evaluate the potential usefulness of the PAI for treatment selection, post-treatment severity values are compared between patients who received their optimal treatment according to the PAI recommendation and those who received their non-optimal treatment. \nHere, an independent one-sided t-test is conducted, testing whether post-treatment severity scores of patients who received their optimal treatment were smaller than those of patients who received their nonoptimal treatment. \nThis is done for each repetition. Therefore, results across repetitions are summarized by reporting the number of significant t-test and mean Cohen's d. Furthermore, the number of repetitions in which assumptions of the t-test are violated is reported. In case of strong violations, alternatives such as the Welch-t-test (implemented here) should be used.",
         'sub_header_2': 'Evaluating the PAI: Plots per repetition',
         'explanation_2': 'Please click to receive the plots for the next repetition. In the right plot, the horizontal dashed lines represent the mean post-treatment severity for each group.',
-        'sub_header_3': f'Evaluating the model performance across {OPTIONS["number_repetit"]} x {OPTIONS["number_folds"]}-fold cross-validation',
+        'sub_header_3': f'Evaluating the model performance across {number_repetit} x {number_folds}-fold cross-validation',
         'explanation_3': 'The performance of the underlying models used in the PAI is presented, both across separate models for treatments and for each model seperately',
         'n_sig_t_test': n_sig_t_test,
         'mean_cohens_d': mean_cohens_d,

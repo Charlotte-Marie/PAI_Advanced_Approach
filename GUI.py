@@ -47,12 +47,12 @@ def run_script():
         "--PATH_INPUT_DATA", path_input_data,
         "--PATH_RESULTS_BASE", path_results_base,
         "--NUMBER_FOLDS", str(number_folds),
-        "--NUMBER_REPETIT", str(number_repetit),
+        "--NUMBER_REPETITIONS", str(number_repetit),
         "--CLASSIFIER", classifier,
         "--HP_TUNING", hp_tuning
     ]
-    try: 
-        output = subprocess.check_output(command, text = True)
+    try:
+        output = subprocess.check_output(command, text=True)
         print(output)
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")
