@@ -78,31 +78,24 @@ def set_options_and_paths():
     parser.add_argument('--HP_TUNING', type=str, default="False",
                         help='Should hyperparameter tuning be applied? Set False or True')
 
-    if 'spyder' in sys.modules or 'IPython' in sys.modules:
-        print("Running in IDE mode (IDLE)")
-        working_directory = os.getcwd()
+    args = parser.parse_args()
 
-        # Change the arguments here, when running script in IDE
+    try:
+        PATHS = generate_and_create_results_path(args)
+        print("Using arguments given via terminal or GUI")
+    except:
+        print("Using arguments given in the script")
+        working_directory = os.getcwd()
         args = parser.parse_args([
             '--PATH_INPUT_DATA', os.path.join(
                 working_directory, "synthet_test_data"),
-            '--NAME_RESULTS_FOLDER', "test_run2",
+            '--NAME_RESULTS_FOLDER', "test_run",
             '--PATH_RESULTS_BASE', working_directory,
             '--CLASSIFIER', 'random_forest',
             '--NUMBER_FOLDS', '5',
             '--NUMBER_REPETITIONS', '1',
         ])
-        args = parser.parse_args()
-
-    elif hasattr(sys, 'ps1'):
-        print("Running in terminal mode")
-        args = parser.parse_args()
-
-    else:
-        print("Could not determine the environment")
-        return None, None, None
-
-    PATHS = generate_and_create_results_path(args)
+        PATHS = generate_and_create_results_path(args)
 
     return args, PATHS
 
