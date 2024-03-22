@@ -10,9 +10,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
 from sklearn.metrics import pairwise_distances
 
-# %% Selectors
-
-
 class FeatureSelector(BaseEstimator, TransformerMixin):
     """
     FeatureSelector is a two-step procedure for feature exclusion.
@@ -58,7 +55,7 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         X_feat_indices = np.arange(X.shape[1])
         # Throw error if X has missing values
-        if np.isnan(X).any():
+        if X.isna().any().any():
             raise ValueError(
                 "Input array X contains missing values. Remove or impute missings before using this FeatureSelector")
 
@@ -67,7 +64,7 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
         self.background_info = np.full([X.shape[1], 2], np.nan)
 
         for feat_idx in range(X.shape[1]):
-            column = X[:, feat_idx]
+            column = X.iloc[:, feat_idx]
             if np.std(column, axis=0) == 0:  # No variance in feature
                 self.is_feat_excluded[feat_idx] = 1
             # Less than 10% in one group (For binary features only)
@@ -82,15 +79,15 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
         X_dim = X.copy()
         X_bin = X.copy()
         for feat_idx in range(X.shape[1]):
-            unique_values = np.unique(X[:, feat_idx])
+            unique_values = np.unique(X.iloc[:, feat_idx])
             if len(unique_values) == 2:  # Binary feature
-                X_dim[:, feat_idx] = np.nan
+                X_dim.iloc[:, feat_idx] = np.nan
             elif len(unique_values) > 2:  # Categorical feature with more than 2 unique values
-                X_bin[:, feat_idx] = np.nan
+                X_bin.iloc[:, feat_idx] = np.nan
 
         # Step 2: Dimensional variables
         while True:
-            X_dim_clean = X_dim[:, self.is_feat_excluded == 0]
+            X_dim_clean = X_dim.iloc[:, self.is_feat_excluded == 0]
             X_dim_clean_feat_indices = X_feat_indices[self.is_feat_excluded == 0]
 
             corr_mat = np.corrcoef(X_dim_clean, rowvar=False)
@@ -98,7 +95,7 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
             corr_mat = np.round(corr_mat, 7)
             np.fill_diagonal(corr_mat, np.nan)
 
-            mean_corr = np.nanmean(np.abs(corr_mat), axis=1)
+            mean_corr = np.mean(np.abs(corr_mat), axis=1)
 
             # Find the indices of the maximum absolute correlation
             max_corr = np.nanmax(corr_mat)
@@ -124,7 +121,7 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
 
         # Step 2: Binary variables
         while True:
-            X_bin_clean = X_bin[:, self.is_feat_excluded == 0]
+            X_bin_clean = X_bin.iloc[:, self.is_feat_excluded == 0]
             X_bin_clean_feat_indices = X_feat_indices[self.is_feat_excluded == 0]
 
             jac_sim_mat = 1 - \
@@ -132,7 +129,7 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
                     X_bin_clean.T, metric="hamming", force_all_finite="allow-nan")
             # Set jaquard similarity to NA when feature has only NAs
             for feat_idx in range(X_bin_clean.shape[1]):
-                column = X_bin_clean[:, feat_idx]
+                column = X_bin_clean.iloc[:, feat_idx]
                 if len(np.unique(column)) == 0 and np.isnan(np.unique(column)[0]):
                     jac_sim_mat[:, feat_idx] = np.nan
                     jac_sim_mat[feat_idx, :] = np.nan
@@ -164,5 +161,8 @@ class FeatureSelector(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        X_cleaned = X[:, self.is_feat_excluded == 0]
+        if self.is_feat_excluded is None:
+            raise ValueError("fit method must be called before transform.")
+            
+        X_cleaned = X.iloc[:, self.is_feat_excluded == 0]
         return X_cleaned
