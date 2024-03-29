@@ -33,9 +33,10 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RepeatedStratifiedKFold, GridSearchCV
 from functools import partial
 import argparse
+import warnings
+from scipy.sparse import SparseEfficiencyWarning
 
 # %% Generell settings
-
 
 def set_options_and_paths():
     """ Set options and paths based on command-line or inline arguments depending on the use of command line or the IDE.
@@ -120,8 +121,22 @@ def generate_treatstratified_splits(PATH_INPUT_DATA, n_folds, n_repeats):
     splits = list(sfk.split(np.zeros(len(y)), y))
     return splits
 
-# %% Procedure for one iteration/split in the repeated stratified cross-validation
+# %% Handle Warnings 
+# FutureWarning cannot be addressed directly since it is a library-level warning. Make sure seaborn and pandas are up-to-date! 
+warnings.filterwarnings("ignore", category=FutureWarning, module="seaborn")
+warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
 
+# SparseEfficiencyWarning
+# Also seems to be on library-level
+# related to how scikit-learn or other libraries handle sparse matrices internally
+warnings.filterwarnings('ignore', category=SparseEfficiencyWarning)
+
+# RuntimeWarning
+# Warning = np.nanmean is called on a slice of an array that contains only NaN values
+# RuntimeWarning just informs that whole slices of the array contain NaNs and skips over them with no change to the subsequent analysis
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+
+# %% Procedure for one iteration/split in the repeated stratified cross-validation
 
 def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     """
@@ -337,7 +352,6 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
         results_single_iter.update(info_hp)
 
     return results_single_iter
-
 
 # %% Run main script
 if __name__ == '__main__':
