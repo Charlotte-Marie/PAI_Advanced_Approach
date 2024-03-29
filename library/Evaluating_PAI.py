@@ -80,7 +80,7 @@ def ev_PAI(y_prediction, plot_path=None, suffix="", iteration_num=None):
     plt.close()
 
     # Extract values of patients receiving their optimal vs. nonoptimal treatment
-    y_prediction['received_treat'] = np.where(
+    y_prediction.loc[:, 'received_treat'] = np.where(
         y_prediction['PAI'] > 0, 'nonoptimal', 'optimal')
     obs_outcomes_optimal = y_prediction[y_prediction['received_treat']
                                         == "optimal"]['y_true'].tolist()
