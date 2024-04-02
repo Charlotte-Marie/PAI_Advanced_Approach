@@ -49,7 +49,7 @@ def summarize_features(outcomes, key_feat_names, key_feat_weights):
         feat_all_data.append(features_coef_df)
     # Concatenate the collected DataFrames into a single DataFrame
     feat_all_df = pd.concat(feat_all_data, axis=1, keys=[
-                            f'itera_{i}' for i in range(len(outcomes))])
+        f'itera_{i-1}' for i in range(1, len(outcomes)+2)])
 
     # Calculate mean feature weights and selection frequencies across iterations
     mean = feat_all_df.mean(axis=1)
