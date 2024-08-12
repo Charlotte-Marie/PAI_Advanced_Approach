@@ -5,36 +5,36 @@ by authors Charlotte Meinke, Kevin Hilbert & Silvan Hornstein
 """
 
 # %% Import packages
-from library.html_script import PAI_to_HTML
-from library.Imputing import MiceModeImputer_pipe
-from library.Preprocessing import FeatureSelector
-from library.Scaling import ZScalerDimVars
-from library.Evaluating_PAI import calc_PAI_metrics_across_reps, summarize_PAI_metrics_across_reps
-from library.Evaluating_feat_importance import summarize_features
-from library.Evaluating_modelperformance import calc_modelperformance_metrics, get_modelperformance_metrics_across_folds, summarize_modelperformance_metrics_across_folds
-
-from library.Organizing import create_folder_to_save_results
-import pickle
-import os
-import time
-from multiprocessing import Pool
-
-import sklearn
-
-import sys
-
+# Standard packages
+import argparse
 import numpy as np
-from collections import Counter
+import os
 import pandas as pd
+import pickle
+import sklearn
+import sys
+import time
+import warnings
+from collections import Counter
+from functools import partial
+from multiprocessing import Pool
 from pandas import read_csv
+from scipy.sparse import SparseEfficiencyWarning
 from sklearn.feature_selection import SelectFromModel
 from sklearn.linear_model import ElasticNet, Ridge, ElasticNetCV, RidgeCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RepeatedStratifiedKFold, GridSearchCV
-from functools import partial
-import argparse
-import warnings
-from scipy.sparse import SparseEfficiencyWarning
+
+# Custom packages 
+from library.Evaluating_PAI import calc_PAI_metrics_across_reps, summarize_PAI_metrics_across_reps
+from library.Evaluating_feat_importance import summarize_features
+from library.Evaluating_modelperformance import calc_modelperformance_metrics, get_modelperformance_metrics_across_folds, summarize_modelperformance_metrics_across_folds
+from library.html_script import PAI_to_HTML
+from library.Imputing import MiceModeImputer_pipe
+from library.Organizing import create_folder_to_save_results
+from library.Preprocessing import FeatureSelector
+from library.Scaling import ZScalerDimVars
+
 
 # %% Generell settings
 
