@@ -31,7 +31,7 @@ from library.Evaluating_feat_importance import summarize_features
 from library.Evaluating_modelperformance import calc_modelperformance_metrics, get_modelperformance_metrics_across_folds, summarize_modelperformance_metrics_across_folds
 from library.html_script import PAI_to_HTML
 from library.Imputing import MiceModeImputer_pipe
-from library.Organizing import create_folder_to_save_results
+from library.Organizing import create_folder_to_save_results, get_categorical_variables
 from library.Preprocessing import FeatureSelector
 from library.Scaling import ZScalerDimVars
 
@@ -158,6 +158,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     features_import_path = os.path.join(PATH_INPUT_DATA, "features.txt")
     labels_import_path = os.path.join(PATH_INPUT_DATA, "labels.txt")
     groups_import_path = os.path.join(PATH_INPUT_DATA, "groups.txt")
+    catvars_import_path = os.path.join(PATH_WORKINGDIRECTORY, "categorical_vars.txt")
 
     features_import = read_csv(features_import_path, sep="\t", header=0)
     labels_import = read_csv(labels_import_path, sep="\t", header=0)
@@ -166,6 +167,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     name_groups_id_import = read_csv(
         groups_import_path, sep="\t", header=0)
     groups = np.ravel(np.array(name_groups_id_import))
+    names_categorical_vars = get_categorical_variables(catvars_import_path)
     y = np.array(labels_import)
     X_df = features_import
 
@@ -180,7 +182,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     # Deal with missings (Remove variables with too many missings and
     # impute missings in remaining variables)
     imputer = MiceModeImputer_pipe()
-    X_train_all_treat_imp = imputer.fit_transform(X_train_all_treat)
+    X_train_all_treat_imp = imputer.fit_transform(X_train_all_treat, names_categorical_vars)
     X_test_all_treat_imp = imputer.transform(X_test_all_treat)
     feat_names_X_imp = imputer.new_feat_names
 
