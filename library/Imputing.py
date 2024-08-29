@@ -90,7 +90,7 @@ class RemoveVarsTooManyMissings(TransformerMixin):
         return self.new_col_names
 
 
-def initialize_preprocessor(X):
+def initialize_preprocessor(X,cat_vars):
     """
     Initialize a preprocessor pipeline for handling missing values and encoding categorical variables.
     # If categorical variables are not one-hot-encoded yet, we have 3 types of data:
@@ -124,8 +124,9 @@ def initialize_preprocessor(X):
     ]
 
     # Define categorical variables (Variables that contain strings)
-    is_string = np.vectorize(lambda x: isinstance(x, str))
-    cat_vars = [col for col in X.columns if any(is_string(X[col]))]
+    if not cat:
+        is_string = np.vectorize(lambda x: isinstance(x, str))
+        cat_vars = [col for col in X.columns if any(is_string(X[col]))]
 
     # Binary transformer pipeline
     binary_transformer = Pipeline(steps=[
@@ -176,9 +177,9 @@ class MiceModeImputer_pipe(BaseEstimator, TransformerMixin):
 
         return new_feat_names
 
-    def fit(self, X, y=None):
+    def fit(self, X, cat, y=None):
         # Initialize the preprocessor pipeline
-        self.Preprocessor = initialize_preprocessor(X)
+        self.Preprocessor = initialize_preprocessor(X,cat)
 
         # Fit the preprocessor on the data
         self.Preprocessor.fit(X)
@@ -194,8 +195,8 @@ class MiceModeImputer_pipe(BaseEstimator, TransformerMixin):
         X_transformed = self.Preprocessor.transform(X)
         return X_transformed
 
-    def fit_transform(self, X):
-        self.Preprocessor = initialize_preprocessor(X)
+    def fit_transform(self, X, cat=None):
+        self.Preprocessor = initialize_preprocessor(X,cat)
         # Fit and transform the data using the preprocessor
         X_transformed = self.Preprocessor.fit_transform(X)
 
