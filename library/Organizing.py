@@ -32,3 +32,23 @@ def create_folder_to_save_results(PATH_RESULTS):
     elif os.path.exists(os.path.join(PATH_RESULTS)):
         raise ValueError(
             'Please use a new model name or delete existing analysis')
+
+
+def get_categorical_variables(catvars_import_path):
+    """
+    Check if file is available specifying names of the categorical variables and return list with these variable names, otherwise return empty list
+
+    Parameters:
+    - catvars_import_path : str
+      The path to the tab-delimited text file with the variable names.
+
+    """
+    # Try to import file specifying names of the categorical variables, get variable names from the file and return list with variable names
+    # Return empty list, if the file does not exist, to identify categorical variable based on strings later on
+    try:
+        with open(catvars_import_path, 'r') as file:
+            names_categorical_vars = file.readline().strip().split('\t')
+        return names_categorical_vars
+    except (FileNotFoundError):
+        names_categorical_vars = []
+        return names_categorical_vars
