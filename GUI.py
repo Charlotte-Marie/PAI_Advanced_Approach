@@ -116,7 +116,7 @@ option_menu_number_repetit.pack(pady=5)
 # Classifier
 label_classifier = Label(root, text="Which classifier do you want to use?")
 label_classifier.pack(pady=5)
-classifier_options = ["ridge_regression", "random_forest"]
+classifier_options = ["ridge_regression", "random_forest", "xgboost"]
 classifier_var = StringVar(root)
 classifier_var.set(classifier_options[0])  # Set default value
 option_menu_classifier = OptionMenu(root, classifier_var, *classifier_options)
