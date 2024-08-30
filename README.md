@@ -28,7 +28,7 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
 
    a) Manually
 
-      You only need three additional packages (numpy, pandas, scikit). Install them manually if you have not installed them yet.
+      You only need four additional packages (numpy, pandas, scikit, seaborn). Install them manually if you have not installed them yet.
     
     b) Automatically for conda-users, run in the terminal:
     
