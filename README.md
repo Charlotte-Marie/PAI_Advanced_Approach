@@ -56,9 +56,11 @@ Before running the script, make sure you have three files ready: features.txt, l
 
 **Specific requirements:**
 
-- **features.txt**: Certain processes in the script hinge on distinguishing feature types (binary, categorical, or dimensional). To facilitate the detection of feature type, recode binary variables as 0.5 and -0.5 and provide categorial variables in string format.
+- **features.txt**: Certain processes in the script hinge on distinguishing feature types (binary, categorical, or dimensional). To facilitate the detection of feature type, recode binary variables as 0.5 and -0.5 and provide categorial variables in string format. Alternatively, you can provide a textfile with the names of all categorical variables ("categorical_vars.txt", see below).
 
 - **groups.txt**: Make sure that it is a binary variable. The format does not matter (string or numerical).
+
+- **categorical_vars.txt**: Optional - provide this file to identify categorical variables if you don't want to provide categorial variables in string format. Provide categorical variable names in one line and tabl-delimitted. Make sure that variable names match those in the features.txt.
 
 **Address missing values:**
 
