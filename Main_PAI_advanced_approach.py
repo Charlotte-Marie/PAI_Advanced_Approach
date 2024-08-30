@@ -158,7 +158,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     features_import_path = os.path.join(PATH_INPUT_DATA, "features.txt")
     labels_import_path = os.path.join(PATH_INPUT_DATA, "labels.txt")
     groups_import_path = os.path.join(PATH_INPUT_DATA, "groups.txt")
-    catvars_import_path = os.path.join(PATH_WORKINGDIRECTORY, "categorical_vars.txt")
+    catvars_import_path = os.path.join(PATH_INPUT_DATA, "categorical_vars.txt")
 
     features_import = read_csv(features_import_path, sep="\t", header=0)
     labels_import = read_csv(labels_import_path, sep="\t", header=0)

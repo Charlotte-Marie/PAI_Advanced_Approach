@@ -4,3 +4,4 @@ dependencies:
   - numpy=1.26.3
   - pandas=2.1.4
   - scikit-learn=1.1.2
+  - seaborn=0.13.2

@@ -124,7 +124,7 @@ def initialize_preprocessor(X,cat_vars):
     ]
 
     # Define categorical variables (Variables that contain strings)
-    if not cat:
+    if not cat_vars:
         is_string = np.vectorize(lambda x: isinstance(x, str))
         cat_vars = [col for col in X.columns if any(is_string(X[col]))]
 
