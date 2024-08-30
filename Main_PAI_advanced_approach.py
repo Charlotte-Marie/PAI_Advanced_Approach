@@ -20,10 +20,12 @@ from functools import partial
 from multiprocessing import Pool
 from pandas import read_csv
 from scipy.sparse import SparseEfficiencyWarning
+from scipy.stats import uniform
 from sklearn.feature_selection import SelectFromModel
 from sklearn.linear_model import ElasticNet, Ridge, ElasticNetCV, RidgeCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RepeatedStratifiedKFold, GridSearchCV
+import xgboost as xgb
 
 # Custom packages 
 from library.Evaluating_PAI import calc_PAI_metrics_across_reps, summarize_PAI_metrics_across_reps
@@ -75,7 +77,7 @@ def set_options_and_paths():
     parser.add_argument('--NUMBER_REPETITIONS', type=int, default=100,
                         help='Number of repetitions of the cross-validation')
     parser.add_argument('--CLASSIFIER', type=str,
-                        help='Classifier to use, set ridge_regression or random_forest')
+                        help='Classifier to use, set ridge_regression, random_forest or XGBoost')
     parser.add_argument('--HP_TUNING', type=str, default="False",
                         help='Should hyperparameter tuning be applied? Set False or True')
 
@@ -269,6 +271,29 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
                 clf = Ridge(fit_intercept=False)
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.coef_
+        elif args.CLASSIFIER == "xgboost":
+            if args.HP_TUNING == "True":
+                parameters = {"n_estimators": [100, 500, 1000],
+                               "learning_rate": uniform(0.03, 0.3), 
+                               "max_depth": [2, 3, 5, 7, 10],
+                               "colsample_bytree": uniform(0.7, 0.3), 
+                               "gamma": uniform(0, 0.5),
+                               "reg_alpha": [0, 0.01, 0.1, 1, 10],  
+                               "reg_lambda": [0.01, 0.1, 1, 10], 
+                               "subsample": uniform(0.6, 0.4)}
+                clf_hp = xgb.XGBRegressor(booster='gbtree', objective="reg:squarederror", random_state=random_state_seed)
+                grid_xgb = GridSearchCV(
+                    clf_hp, parameters, scoring='neg_mean_absolute_error', cv=5)
+                grid_xgb.fit(X_train_scaled, y_train)
+                background_hp_tuning_xgb = pd.DataFrame(
+                    grid_xgb.cv_results_)
+                # Add to info_per_treament
+                info_per_treat[treatment]["background_xgb_hp"] = background_hp_tuning_xgb
+                clf = grid_xgb.best_estimator_
+            else:
+                clf = xgb.XGBRegressor(booster='gbtree', n_estimators=100, learning_rate=0.1, max_depth=5, gamma=0, colsample_bytree=0.5, objective="reg:squarederror", reg_alpha=0, reg_lambda=1, subsample=0.5, random_state=random_state_seed)
+            clf.fit(X_train_scaled_selected_factual, y_train)
+            feature_weights = clf.feature_importances_
 
         # Make predictions on the test-set for the factual treatment and save more information for later
         y_true_pred_df_one_fold = pd.DataFrame()
@@ -345,12 +370,20 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     }
     # Add other variables in case of hp tuning
     if args.HP_TUNING == "True":
-        info_hp = {
-            "en_background_treat_A": info_per_treat["treatment_A"]["background_en_hp"],
-            "en_background_treat_B": info_per_treat["treatment_B"]["background_en_hp"],
-            "ridge_background_treat_A": info_per_treat["treatment_A"]["background_ridge_hp"],
-            "ridge_background_treat_B": info_per_treat["treatment_B"]["background_ridge_hp"]
-        }
+        if args.CLASSIFIER == "ridge_regression":
+            info_hp = {
+                "en_background_treat_A": info_per_treat["treatment_A"]["background_en_hp"],
+                "en_background_treat_B": info_per_treat["treatment_B"]["background_en_hp"],
+                "ridge_background_treat_A": info_per_treat["treatment_A"]["background_ridge_hp"],
+                "ridge_background_treat_B": info_per_treat["treatment_B"]["background_ridge_hp"]
+            }            
+        elif args.CLASSIFIER == "xgboost":
+            info_hp = {
+                "en_background_treat_A": info_per_treat["treatment_A"]["background_en_hp"],
+                "en_background_treat_B": info_per_treat["treatment_B"]["background_en_hp"],
+                "xgb_background_treat_A": info_per_treat["treatment_A"]["background_xgb_hp"],
+                "xgb_background_treat_B": info_per_treat["treatment_B"]["background_xgb_hp"]
+            }
         results_single_iter.update(info_hp)
 
     return results_single_iter
