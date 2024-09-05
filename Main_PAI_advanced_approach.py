@@ -38,7 +38,7 @@ from library.Preprocessing import FeatureSelector
 from library.Scaling import ZScalerDimVars
 
 
-# %% Generell settings
+# %% General settings
 
 def set_options_and_paths():
     """ Set options and paths based on command-line or inline arguments depending on the use of command line or the IDE.
