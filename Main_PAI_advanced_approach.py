@@ -11,6 +11,7 @@ import numpy as np
 import os
 import pandas as pd
 import pickle
+import shap
 import sklearn
 import sys
 import time
@@ -29,7 +30,7 @@ import xgboost as xgb
 
 # Custom packages 
 from library.Evaluating_PAI import calc_PAI_metrics_across_reps, summarize_PAI_metrics_across_reps
-from library.Evaluating_feat_importance import summarize_features
+from library.Evaluating_feat_importance import summarize_features, collect_shaps, make_shap_plots
 from library.Evaluating_modelperformance import calc_modelperformance_metrics, get_modelperformance_metrics_across_folds, summarize_modelperformance_metrics_across_folds
 from library.html_script import PAI_to_HTML
 from library.Imputing import MiceModeImputer_pipe
@@ -254,6 +255,9 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
                                         max_samples=None)
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.feature_importances_
+            # Get SHAP values for treatment
+            shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional')
+            shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
         elif args.CLASSIFIER == "ridge_regression":
             if args.HP_TUNING == "True":
                 parameters = {'alpha': [0.01, 0.1, 1, 10, 20, 30, 40, 50]}
@@ -271,6 +275,10 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
                 clf = Ridge(fit_intercept=False)
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.coef_
+            # Get SHAP values for treatment
+            masker = shap.maskers.Independent(data = X_train_scaled_selected_factual)
+            shap_explainer = shap.LinearExplainer(model = clf, masker = masker, data = X_train_scaled_selected_factual)
+            shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
         elif args.CLASSIFIER == "xgboost":
             if args.HP_TUNING == "True":
                 parameters = {"n_estimators": [100, 500, 1000],
@@ -294,6 +302,9 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
                 clf = xgb.XGBRegressor(booster='gbtree', n_estimators=100, learning_rate=0.1, max_depth=5, gamma=0, colsample_bytree=0.5, objective="reg:squarederror", reg_alpha=0, reg_lambda=1, subsample=0.5, random_state=random_state_seed)
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.feature_importances_
+            # Get SHAP values for treatment
+            shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional')
+            shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
 
         # Make predictions on the test-set for the factual treatment and save more information for later
         y_true_pred_df_one_fold = pd.DataFrame()
@@ -305,12 +316,14 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
         # Save information per treatment
         new_data = {
             "X_test": X_test_cleaned,
+            "X_test_selected": X_test_scaled_selected_factual,
             "fitted scaler": scaler,
             "fitted selector": sfm,
             "clf": clf,
             "n_feat_in_clf": clf.n_features_in_,
             "feature_names": feature_names_selected,
             "feature_weights": feature_weights,
+            "shap_values": shap_values,
             "y_true_pred_df_one_fold": y_true_pred_df_one_fold
         }
         info_per_treat[treatment].update(new_data)
@@ -362,11 +375,16 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
         "modelperformance_metrics": modelperformance_metrics,
         "sel_features_names_treat_A": info_per_treat["treatment_A"]["feature_names"],
         "sel_features_coef_treat_A": info_per_treat["treatment_A"]["feature_weights"],
+        "sel_features_shap_treat_A": info_per_treat["treatment_A"]["shap_values"],
         "sel_features_names_treat_B": info_per_treat["treatment_B"]["feature_names"],
         "sel_features_coef_treat_B": info_per_treat["treatment_B"]["feature_weights"],
+        "sel_features_shap_treat_B": info_per_treat["treatment_B"]["shap_values"],
         "n_feat_treat_A": info_per_treat["treatment_A"]["n_feat_in_clf"],
         "n_feat_treat_B": info_per_treat["treatment_B"]["n_feat_in_clf"],
-        "excluded_feat": feat_names_excluded
+        "excluded_feat": feat_names_excluded,
+        "all_features": feat_names_X_imp,
+        "test_feature_values_treat_A": info_per_treat["treatment_A"]["X_test_selected"], 
+        "test_feature_values_treat_B": info_per_treat["treatment_B"]["X_test_selected"]
     }
     # Add other variables in case of hp tuning
     if args.HP_TUNING == "True":
@@ -434,9 +452,17 @@ if __name__ == '__main__':
     feat_sum_treat_A = summarize_features(outcomes=outcomes,
                                           key_feat_names="sel_features_names_treat_A",
                                           key_feat_weights="sel_features_coef_treat_A")
+    shap_treat_A, feat_values_treat_A = collect_shaps(outcomes=outcomes,
+                                          key_feat_names="sel_features_names_treat_A",
+                                          key_feat_shaps="sel_features_shap_treat_A",
+                                          key_test_features="test_feature_values_treat_A")
     feat_sum_treat_B = summarize_features(outcomes=outcomes,
                                           key_feat_names="sel_features_names_treat_B",
                                           key_feat_weights="sel_features_coef_treat_B")
+    shap_treat_B, feat_values_treat_B = collect_shaps(outcomes=outcomes,
+                                          key_feat_names="sel_features_names_treat_B",
+                                          key_feat_shaps="sel_features_shap_treat_B",
+                                          key_test_features="test_feature_values_treat_B")
 
     # Save summaries as csv
     modelperformance_metrics_across_folds.to_csv(os.path.join(
@@ -451,8 +477,17 @@ if __name__ == '__main__':
             PATHS["RESULT"], ("PAI_summary_" + subgroup + ".txt")), sep="\t", na_rep="NA")
     feat_sum_treat_A.to_csv(os.path.join(
         PATHS["RESULT"], "features_sum_treat_A.txt"), sep="\t", na_rep="NA")
+    shap_treat_A.to_csv(os.path.join(
+        PATHS["RESULT"], "shap_treat_A.txt"), sep="\t", na_rep="NA")
     feat_sum_treat_B.to_csv(os.path.join(
         PATHS["RESULT"], "features_sum_treat_B.txt"), sep="\t", na_rep="NA")
+    shap_treat_B.to_csv(os.path.join(
+        PATHS["RESULT"], "shap_treat_B.txt"), sep="\t", na_rep="NA")
+
+    # Create shap plots
+    make_shap_plots(shap_treat_A, feat_values_treat_A, plot_path=PATHS["RESULT_PLOTS"], treatment_option = 0)
+    make_shap_plots(shap_treat_B, feat_values_treat_B, plot_path=PATHS["RESULT_PLOTS"], treatment_option = 1)       
+    
 
     # HTML Summary
     try:
