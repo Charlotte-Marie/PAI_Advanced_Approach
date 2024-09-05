@@ -248,11 +248,28 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
 
         # Fit classifier
         if args.CLASSIFIER == "random_forest":
-            clf = RandomForestRegressor(n_estimators=100, criterion='squared_error',
-                                        max_depth=None, min_samples_split=5,
-                                        max_features=1.0, bootstrap=True,
-                                        oob_score=False, random_state=random_state_seed,
-                                        max_samples=None)
+            if args.HP_TUNING == "True":
+                parameters = {"n_estimators": [100, 500, 1000, 2000, 10000],
+                              "criterion": ['gini', 'entropy'], 
+                              "max_depth": [2, 3, 4, 5],
+                              "max_features": ['sqrt', 'log2'], 
+                              "min_samples_split": [2, 4, 6, 8, 10],
+                              "min_samples_leaf": [1, 2, 3, 4, 5]}
+                clf_hp = RandomForestRegressor(criterion='squared_error', bootstrap=True, oob_score=False, random_state=random_state_seed)
+                grid_rf = GridSearchCV(
+                    clf_hp, parameters, scoring='neg_mean_absolute_error', cv=5)
+                grid_rf.fit(X_train_scaled, y_train)
+                background_hp_tuning_rf = pd.DataFrame(
+                    grid_rf.cv_results_)
+                # Add to info_per_treament
+                info_per_treat[treatment]["background_rf_hp"] = background_hp_tuning_rf
+                clf = grid_rf.best_estimator_
+            else:
+                clf = RandomForestRegressor(n_estimators=100, criterion='squared_error',
+                                            max_depth=None, min_samples_split=5,
+                                            max_features=1.0, bootstrap=True,
+                                            oob_score=False, random_state=random_state_seed,
+                                            max_samples=None)
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.feature_importances_
             # Get SHAP values for treatment
@@ -388,7 +405,14 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     }
     # Add other variables in case of hp tuning
     if args.HP_TUNING == "True":
-        if args.CLASSIFIER == "ridge_regression":
+        if args.CLASSIFIER == "random_forest":
+            info_hp = {
+                "en_background_treat_A": info_per_treat["treatment_A"]["background_en_hp"],
+                "en_background_treat_B": info_per_treat["treatment_B"]["background_en_hp"],
+                "ridge_background_treat_A": info_per_treat["treatment_A"]["background_rf_hp"],
+                "ridge_background_treat_B": info_per_treat["treatment_B"]["background_rf_hp"]
+            }        
+        elif args.CLASSIFIER == "ridge_regression":
             info_hp = {
                 "en_background_treat_A": info_per_treat["treatment_A"]["background_en_hp"],
                 "en_background_treat_B": info_per_treat["treatment_B"]["background_en_hp"],
