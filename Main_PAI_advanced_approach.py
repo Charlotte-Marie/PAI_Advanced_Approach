@@ -273,7 +273,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.feature_importances_
             # Get SHAP values for treatment
-            shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional')
+            shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional', check_additivity=False) #Additivity check for Random Forest currently unsolved
             shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
         elif args.CLASSIFIER == "ridge_regression":
             if args.HP_TUNING == "True":
