@@ -163,6 +163,16 @@ These files show the feature selection frequency and mean feature importance acr
 
 - features_sum_treat_A.txt
 - features_sum_treat_B.txt
+
+These files and images show the feature importances according to SHAP values across folds per treatment option:
+
+- shap_treat_A.txt
+- shap_treat_B.txt
+- SHAP_Barplot_treatment_A.png
+- SHAP_Barplot_treatment_B.png
+- Shap_Beeswarm_treatment_A.png
+- Shap_Beeswarm_treatment_B.png
+
 </details>
 
 # Empirical and theoretical foundations of design choices
