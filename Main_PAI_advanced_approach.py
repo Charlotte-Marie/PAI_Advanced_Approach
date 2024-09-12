@@ -249,13 +249,12 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
         # Fit classifier
         if args.CLASSIFIER == "random_forest":
             if args.HP_TUNING == "True":
-                parameters = {"n_estimators": [100, 500, 1000, 2000, 10000],
-                              "criterion": ['gini', 'entropy'], 
-                              "max_depth": [2, 3, 4, 5],
+                parameters = {"criterion": ['gini', 'entropy'], 
+                              "max_depth": [3, 4, 5],
                               "max_features": ['sqrt', 'log2'], 
-                              "min_samples_split": [2, 4, 6, 8, 10],
-                              "min_samples_leaf": [1, 2, 3, 4, 5]}
-                clf_hp = RandomForestRegressor(criterion='squared_error', bootstrap=True, oob_score=False, random_state=random_state_seed)
+                              "min_samples_split": [2, 6, 10],
+                              "min_samples_leaf": [1, 3, 5]}
+                clf_hp = RandomForestRegressor(n_estimators=100, criterion='squared_error', bootstrap=True, oob_score=False, random_state=random_state_seed)
                 grid_rf = GridSearchCV(
                     clf_hp, parameters, scoring='neg_mean_absolute_error', cv=5)
                 grid_rf.fit(X_train_scaled, y_train)
@@ -298,15 +297,14 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
             shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
         elif args.CLASSIFIER == "xgboost":
             if args.HP_TUNING == "True":
-                parameters = {"n_estimators": [100, 500, 1000],
-                               "learning_rate": uniform(0.03, 0.3), 
-                               "max_depth": [2, 3, 5, 7, 10],
+                parameters = {"learning_rate": uniform(0.03, 0.3), 
+                               "max_depth": [2, 5, 10],
                                "colsample_bytree": uniform(0.7, 0.3), 
                                "gamma": uniform(0, 0.5),
                                "reg_alpha": [0, 0.01, 0.1, 1, 10],  
                                "reg_lambda": [0.01, 0.1, 1, 10], 
                                "subsample": uniform(0.6, 0.4)}
-                clf_hp = xgb.XGBRegressor(booster='gbtree', objective="reg:squarederror", random_state=random_state_seed)
+                clf_hp = xgb.XGBRegressor(booster='gbtree', n_estimators=100, objective="reg:squarederror", random_state=random_state_seed)
                 grid_xgb = GridSearchCV(
                     clf_hp, parameters, scoring='neg_mean_absolute_error', cv=5)
                 grid_xgb.fit(X_train_scaled, y_train)
