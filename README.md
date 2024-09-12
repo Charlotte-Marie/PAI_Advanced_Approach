@@ -112,6 +112,9 @@ args = parser.parse_args([
 
 b) Run the script
 
+# Note on hyperparameter tuning
+If you selected hyperparameter tuning, this will considerably increase the computational time, particularly for the random forest and xgboost classifiers.
+
 
 # Interpret the results
 <details>
