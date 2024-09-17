@@ -263,6 +263,81 @@ def calc_PAI_metrics_across_reps(outcomes, key_PAI_df, n_folds, plot_path):
 
     return PAI_metrics_across_reps
 
+# %% Evaluate PAI across repetitions but not per treatment
+# This function is needed for testing a "mixed" pipeline (traditional and advanced approach) as required by the reviewer.
+# The pipeline can be found here: https://github.com/Charlotte-Marie/PAI-paper_analyses
+def calc_PAI_metrics_across_reps_notpertreat(outcomes, key_PAI_df, n_folds, plot_path):
+    """
+    Calculate PAI metrics across repetitions of k-fold cross-validation.
+
+    The PAI is evaluated for each repetition of the k-fold cross-validation. For instance,
+    if we have performed a 100 * 5-fold cross-validation, the PAI is evaluated 100 times,
+    calculating e.g., the mean absolute PAI, testing for a difference in post-treatment severity between patients receiving 
+    their optimal vs. nonopitmal treatment, or calculating Cohen´s d.
+
+    Parameters:
+    - outcomes (list): List with one entry per iteration. Each entry is a dictionary with all information saved per iteration (results_single_iter).
+    - key_PAI_df (str): Key in the results_single_iter dictionary containing the PAI results metrics.
+    - n_folds (int): Number of folds in the cross-validation.
+
+    Returns:
+    dict: A dictionary containing dataframes with PAI evaluation metrics for each repetition of cross-validation.
+        - 'all': Metrics for all PAIs.
+        - '50_perc': Metrics for the top 50 percent highest PAIs.
+        - 'treat_A': Metrics for PAIs in treatment_A.
+        - 'treat_B': Metrics for PAIs in treatment_B.
+    Calculate PAI metrics across repetitions of k-fold cross-validation.
+    """
+
+    results_PAI_all = []
+    results_PAI_50_perc = []
+    results_PAI_treat_A = []
+    results_PAI_treat_B = []
+
+    # Collect outcomes per repetition
+    outcomes_all_repeats = [outcomes[i:i+n_folds]
+                            for i in range(0, len(outcomes), n_folds)]
+
+    for repeat, outcomes_one_repeat in enumerate(outcomes_all_repeats):
+        y_true_PAI_all_folds = pd.concat(
+            [inner_dict[key_PAI_df] for inner_dict in outcomes_one_repeat], ignore_index=True)
+
+        # Calculate Cohens d and absolute PAI for all PAIs
+        results_PAI_all.append(ev_PAI(
+            y_true_PAI_all_folds,
+            plot_path=plot_path,
+            suffix=f"{repeat}_all",
+            iteration_num=repeat))
+
+        # Calculate Cohens d for 50 percent highest PAIs
+        median = np.median(abs(y_true_PAI_all_folds["PAI"]))
+        is_50_percent = abs(y_true_PAI_all_folds["PAI"]) > median
+        results_PAI_50_perc.append(ev_PAI(y_true_PAI_all_folds[is_50_percent],
+                                          plot_path=plot_path,
+                                          suffix=f"{repeat}_50_perc",
+                                          iteration_num=repeat))
+
+        results_PAI_all_df = pd.DataFrame(results_PAI_all)
+        results_PAI_50_perc_df = pd.DataFrame(results_PAI_50_perc)
+        results_PAI_treat_A_df = pd.DataFrame(results_PAI_treat_A)
+        results_PAI_treat_B_df = pd.DataFrame(results_PAI_treat_B)
+        # Add column with index of repetition
+        results_PAI_all_df.insert(0, 'repeat', results_PAI_all_df.index)
+        results_PAI_50_perc_df.insert(
+            0, 'repeat', results_PAI_50_perc_df.index)
+        results_PAI_treat_A_df.insert(
+            0, 'repeat', results_PAI_treat_A_df.index)
+        results_PAI_treat_B_df.insert(
+            0, 'repeat', results_PAI_treat_B_df.index)
+
+        # Create common dictionary
+        PAI_metrics_across_reps = {
+            "all": results_PAI_all_df,
+            "50_perc": results_PAI_50_perc_df,
+        }
+
+    return PAI_metrics_across_reps
+
 # %% Summarize PAI across repetitions
 
 
