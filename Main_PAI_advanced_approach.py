@@ -164,7 +164,6 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     features_import_path = os.path.join(PATH_INPUT_DATA, "features.txt")
     labels_import_path = os.path.join(PATH_INPUT_DATA, "labels.txt")
     groups_import_path = os.path.join(PATH_INPUT_DATA, "groups.txt")
-    catvars_import_path = os.path.join(PATH_INPUT_DATA, "categorical_vars.txt")
 
     features_import = read_csv(features_import_path, sep="\t", header=0)
     labels_import = read_csv(labels_import_path, sep="\t", header=0)
@@ -173,9 +172,16 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
     name_groups_id_import = read_csv(
         groups_import_path, sep="\t", header=0)
     groups = np.ravel(np.array(name_groups_id_import))
-    names_categorical_vars = get_categorical_variables(catvars_import_path)
     y = np.array(labels_import)
     X_df = features_import
+    
+    # Load categorical variables names if they are available
+    # Otherwise the Imputer does automatically identify string variables as categorical variables
+    try:
+        catvars_import_path = os.path.join(PATH_INPUT_DATA, "categorical_vars.txt")
+        names_categorical_vars = get_categorical_variables(catvars_import_path)
+    except: 
+        names_categorical_vars = None
 
     # Perform splitting of dataframe into training and testset
     train_index = split[0]
