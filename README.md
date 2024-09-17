@@ -5,7 +5,7 @@ The Personalized Advantage Index (PAI) was introduced first by DeRubeis et al. (
 > ## **ℹ️ Getting Started** 
 > Follow these steps to quickly set up the program and run a first analysis using the provided example data:
 > 1. **Clone this repository** to your local machine.
-> 2. Make sure you have installed the packages numpy, pandas, scikit, and seaborn.
+> 2. Make sure you have installed the packages numpy, pandas, scikit, seaborn, xgboost, shap, and jinja2.
 > 3. **Open and run the script "[GUI.py](http://gui.py/)".**
 >    1. *Folder with input data*: select "synthet_test_data" folder for using example data.
 >    2. Select name and location of results-folder. Leave analysis parameters at default.
