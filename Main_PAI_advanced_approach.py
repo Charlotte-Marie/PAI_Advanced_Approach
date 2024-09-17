@@ -78,7 +78,7 @@ def set_options_and_paths():
     parser.add_argument('--NUMBER_REPETITIONS', type=int, default=100,
                         help='Number of repetitions of the cross-validation')
     parser.add_argument('--CLASSIFIER', type=str,
-                        help='Classifier to use, set ridge_regression, random_forest or XGBoost')
+                        help='Classifier to use, set ridge_regression, random_forest or xgboost')
     parser.add_argument('--HP_TUNING', type=str, default="False",
                         help='Should hyperparameter tuning be applied? Set False or True')
 
@@ -249,8 +249,7 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
         # Fit classifier
         if args.CLASSIFIER == "random_forest":
             if args.HP_TUNING == "True":
-                parameters = {"criterion": ['gini', 'entropy'], 
-                              "max_depth": [3, 4, 5],
+                parameters = {"max_depth": [3, 4, 5],
                               "max_features": ['sqrt', 'log2'], 
                               "min_samples_split": [2, 6, 10],
                               "min_samples_leaf": [1, 3, 5]}
@@ -272,8 +271,8 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.feature_importances_
             # Get SHAP values for treatment
-            shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional', check_additivity=False) #Additivity check for Random Forest currently unsolved
-            shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
+            shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional')
+            shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual, check_additivity=False) 
         elif args.CLASSIFIER == "ridge_regression":
             if args.HP_TUNING == "True":
                 parameters = {'alpha': [0.01, 0.1, 1, 10, 20, 30, 40, 50]}
@@ -407,8 +406,8 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
             info_hp = {
                 "en_background_treat_A": info_per_treat["treatment_A"]["background_en_hp"],
                 "en_background_treat_B": info_per_treat["treatment_B"]["background_en_hp"],
-                "ridge_background_treat_A": info_per_treat["treatment_A"]["background_rf_hp"],
-                "ridge_background_treat_B": info_per_treat["treatment_B"]["background_rf_hp"]
+                "rf_background_treat_A": info_per_treat["treatment_A"]["background_rf_hp"],
+                "rf_background_treat_B": info_per_treat["treatment_B"]["background_rf_hp"]
             }        
         elif args.CLASSIFIER == "ridge_regression":
             info_hp = {
