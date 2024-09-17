@@ -46,6 +46,19 @@
             display: block;
         }
         
+        /* Specific styles for SHAP images */
+        .shap-images {
+            display: flex; /* Flexbox for only the SHAP images */
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px; /* Add some space between the SHAP images */
+        }
+        
+        .shap-images img {
+            width: 70%; /* Apply specific size for SHAP images */
+            height: auto; /* Keep aspect ratio */
+        }
+        
         /* Reduce space between title and figures */
         .image-container h3 {
             margin-bottom: 5px;
@@ -192,6 +205,27 @@ function changeImage() {
 }
 
 </script>
+
+{% if plot_filenames['SHAP'][0] %}
+    <h2>{{ sub_header_4 }}</h2>
+    <div id="distribution_plots">
+        <div class="shap-images">
+            {% if plot_filenames['SHAP'][0] is not none %}
+            <div id="SHAP_A" class="image-container">
+                <h3>Treatment A</h3>
+                <img src="{{ plot_filenames['SHAP'][0] }}" alt="Treatment A">
+            </div>
+            {% endif %}
+            
+            {% if plot_filenames['SHAP'][1] is not none %}
+            <div id="SHAP_B" class="image-container">
+                <h3>Treatment B</h3>
+                <img src="{{ plot_filenames['SHAP'][1] }}" alt="Treatment B">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
 
 </body>
 </html>

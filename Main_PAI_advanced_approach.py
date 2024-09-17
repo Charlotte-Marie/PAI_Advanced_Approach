@@ -81,6 +81,8 @@ def set_options_and_paths():
                         help='Classifier to use, set ridge_regression, random_forest or xgboost')
     parser.add_argument('--HP_TUNING', type=str, default="False",
                         help='Should hyperparameter tuning be applied? Set False or True')
+    parser.add_argument('--CALC_SHAP_VALUES', type=str, default="False",
+                        help='Should shap values be calculculated? Set False or True')
 
     args = parser.parse_args()
 
@@ -97,7 +99,8 @@ def set_options_and_paths():
             '--PATH_RESULTS_BASE', working_directory,
             '--CLASSIFIER', 'random_forest',
             '--NUMBER_FOLDS', '5',
-            '--NUMBER_REPETITIONS', '1',
+            '--NUMBER_REPETITIONS', '2',
+            '--CALC_SHAP_VALUES', 'True',
         ])
         PATHS = generate_and_create_results_path(args)
 
@@ -271,8 +274,12 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.feature_importances_
             # Get SHAP values for treatment
-            shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional')
-            shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual, check_additivity=False) 
+            if args.CALC_SHAP_VALUES == "True":
+                shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional')
+                shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual, check_additivity=False)
+            else:
+                shap_values = None
+            
         elif args.CLASSIFIER == "ridge_regression":
             if args.HP_TUNING == "True":
                 parameters = {'alpha': [0.01, 0.1, 1, 10, 20, 30, 40, 50]}
@@ -291,9 +298,12 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.coef_
             # Get SHAP values for treatment
-            masker = shap.maskers.Independent(data = X_train_scaled_selected_factual)
-            shap_explainer = shap.LinearExplainer(model = clf, masker = masker, data = X_train_scaled_selected_factual)
-            shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
+            if args.CALC_SHAP_VALUES == "True":
+                masker = shap.maskers.Independent(data = X_train_scaled_selected_factual)
+                shap_explainer = shap.LinearExplainer(model = clf, masker = masker, data = X_train_scaled_selected_factual)
+                shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
+            else:
+                shap_values = None
         elif args.CLASSIFIER == "xgboost":
             if args.HP_TUNING == "True":
                 parameters = {"learning_rate": uniform(0.03, 0.3), 
@@ -317,8 +327,11 @@ def procedure_per_iter(split, PATH_RESULTS, PATH_INPUT_DATA, args):
             clf.fit(X_train_scaled_selected_factual, y_train)
             feature_weights = clf.feature_importances_
             # Get SHAP values for treatment
-            shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional')
-            shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
+            if args.CALC_SHAP_VALUES == "True":
+                shap_explainer = shap.TreeExplainer(model = clf, data = X_train_scaled_selected_factual, model_output='raw', feature_perturbation='interventional')
+                shap_values = shap_explainer.shap_values(X_test_scaled_selected_factual) 
+            else: 
+                shap_values = None
 
         # Make predictions on the test-set for the factual treatment and save more information for later
         y_true_pred_df_one_fold = pd.DataFrame()
@@ -473,17 +486,9 @@ if __name__ == '__main__':
     feat_sum_treat_A = summarize_features(outcomes=outcomes,
                                           key_feat_names="sel_features_names_treat_A",
                                           key_feat_weights="sel_features_coef_treat_A")
-    shap_treat_A, feat_values_treat_A = collect_shaps(outcomes=outcomes,
-                                          key_feat_names="sel_features_names_treat_A",
-                                          key_feat_shaps="sel_features_shap_treat_A",
-                                          key_test_features="test_feature_values_treat_A")
     feat_sum_treat_B = summarize_features(outcomes=outcomes,
                                           key_feat_names="sel_features_names_treat_B",
                                           key_feat_weights="sel_features_coef_treat_B")
-    shap_treat_B, feat_values_treat_B = collect_shaps(outcomes=outcomes,
-                                          key_feat_names="sel_features_names_treat_B",
-                                          key_feat_shaps="sel_features_shap_treat_B",
-                                          key_test_features="test_feature_values_treat_B")
 
     # Save summaries as csv
     modelperformance_metrics_across_folds.to_csv(os.path.join(
@@ -498,18 +503,27 @@ if __name__ == '__main__':
             PATHS["RESULT"], ("PAI_summary_" + subgroup + ".txt")), sep="\t", na_rep="NA")
     feat_sum_treat_A.to_csv(os.path.join(
         PATHS["RESULT"], "features_sum_treat_A.txt"), sep="\t", na_rep="NA")
-    shap_treat_A.to_csv(os.path.join(
-        PATHS["RESULT"], "shap_treat_A.txt"), sep="\t", na_rep="NA")
     feat_sum_treat_B.to_csv(os.path.join(
         PATHS["RESULT"], "features_sum_treat_B.txt"), sep="\t", na_rep="NA")
-    shap_treat_B.to_csv(os.path.join(
-        PATHS["RESULT"], "shap_treat_B.txt"), sep="\t", na_rep="NA")
-
-    # Create shap plots
-    make_shap_plots(shap_treat_A, feat_values_treat_A, plot_path=PATHS["RESULT_PLOTS"], treatment_option = 0)
-    make_shap_plots(shap_treat_B, feat_values_treat_B, plot_path=PATHS["RESULT_PLOTS"], treatment_option = 1)       
+  
     
-
+    # Summarize and save SHAP values and create plots
+    if args.CALC_SHAP_VALUES == "True":
+        shap_treat_A, feat_values_treat_A = collect_shaps(outcomes=outcomes,
+                                              key_feat_names="sel_features_names_treat_A",
+                                              key_feat_shaps="sel_features_shap_treat_A",
+                                              key_test_features="test_feature_values_treat_A")
+        shap_treat_B, feat_values_treat_B = collect_shaps(outcomes=outcomes,
+                                              key_feat_names="sel_features_names_treat_B",
+                                              key_feat_shaps="sel_features_shap_treat_B",
+                                              key_test_features="test_feature_values_treat_B")
+        shap_treat_A.to_csv(os.path.join(
+            PATHS["RESULT"], "shap_treat_A.txt"), sep="\t", na_rep="NA")
+        shap_treat_B.to_csv(os.path.join(
+            PATHS["RESULT"], "shap_treat_B.txt"), sep="\t", na_rep="NA")
+        make_shap_plots(shap_treat_A, feat_values_treat_A, plot_path=PATHS["RESULT_PLOTS"], treatment_option = 0)
+        make_shap_plots(shap_treat_B, feat_values_treat_B, plot_path=PATHS["RESULT_PLOTS"], treatment_option = 1)       
+    
     # HTML Summary
     try:
         PAI_to_HTML(PATHS["RESULT"], plots_directory=PATHS["RESULT_PLOTS"],

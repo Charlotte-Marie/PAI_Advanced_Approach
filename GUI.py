@@ -39,6 +39,7 @@ def run_script():
     number_repetit = number_repetit_var.get()
     classifier = classifier_var.get()
     hp_tuning = hp_tuning_var.get()
+    SHAP = SHAP_var.get()
 
     # Construct the command
     command = [
@@ -49,7 +50,8 @@ def run_script():
         "--NUMBER_FOLDS", str(number_folds),
         "--NUMBER_REPETITIONS", str(number_repetit),
         "--CLASSIFIER", classifier,
-        "--HP_TUNING", hp_tuning
+        "--HP_TUNING", hp_tuning,
+        "--CALC_SHAP_VALUES", SHAP
     ]
     try:
         output = subprocess.check_output(command, text=True)
@@ -130,6 +132,15 @@ hp_tuning_var = StringVar(root)
 hp_tuning_var.set(hp_tuning_options[0])  # Set default value
 option_menu_hp_tuning = OptionMenu(root, hp_tuning_var, *hp_tuning_options)
 option_menu_hp_tuning.pack(pady=5)
+
+#  SHAP values
+label_SHAP = Label(root, text="Should SHAP values be calculated?:")
+label_SHAP.pack(pady=5)
+SHAP_options = ["False", "True"]
+SHAP_var = StringVar(root)
+SHAP_var.set(SHAP_options[0])  # Set default value
+option_menu_SHAP = OptionMenu(root, SHAP_var, *SHAP_options)
+option_menu_SHAP.pack(pady=5)
 
 
 button_run_script = tk.Button(root, text="Run Script", command=run_script)

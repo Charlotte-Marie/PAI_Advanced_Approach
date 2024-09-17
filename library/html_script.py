@@ -39,16 +39,21 @@ def PAI_to_HTML(PATH_RESULTS, plots_directory, number_folds, number_repetit):
         "PAI_distribution") and file.endswith("_all.png")]
     optimal_vs_nonoptimal_files = [file for file in plot_files if file.startswith(
         "optimal_vs_nonoptimal") and file.endswith("_all.png")]
+    SHAP_beeswarm_files = [file for file in plot_files if file.startswith(
+        "Shap_Beeswarm")]
 
-    # Interpreting numbers in plot images as integers instread of strings
+    # Interpreting numbers in plot images as integers instead of strings
     pai_distribution_files.sort(key=extract_number)
     optimal_vs_nonoptimal_files.sort(key=extract_number)
+    SHAP_beeswarm_files.sort(key=extract_number)
 
     # Prepend the full path for accessing the images (if necessary)
     pai_distribution_files = [os.path.join(
         plots_directory, file) for file in pai_distribution_files]
     optimal_vs_nonoptimal_files = [os.path.join(
         plots_directory, file) for file in optimal_vs_nonoptimal_files]
+    SHAP_beeswarm_files = [os.path.join(
+        plots_directory, file) for file in SHAP_beeswarm_files]
 
     # Read the PAI summary file
     with open(summary_path, 'r') as summary_file:
@@ -102,6 +107,7 @@ def PAI_to_HTML(PATH_RESULTS, plots_directory, number_folds, number_repetit):
         'explanation_2': 'Please click to receive the plots for the next repetition. In the right plot, the horizontal dashed lines represent the mean post-treatment severity for each group.',
         'sub_header_3': f'Evaluating the model performance across {number_repetit} x {number_folds}-fold cross-validation',
         'explanation_3': 'The performance of the underlying models used in the PAI is presented, both across separate models for treatments and for each model seperately',
+        'sub_header_4': 'SHAP values if calculated',
         'n_sig_t_test': n_sig_t_test,
         'mean_cohens_d': mean_cohens_d,
         'mean_cohens_d_sd': mean_cohens_d_sd,
@@ -111,6 +117,7 @@ def PAI_to_HTML(PATH_RESULTS, plots_directory, number_folds, number_repetit):
         'plot_filenames': {
             'pai_distribution': pai_distribution_files,
             'optimal_vs_nonoptimal': optimal_vs_nonoptimal_files,
+            'SHAP': SHAP_beeswarm_files,
         }
     }
 
