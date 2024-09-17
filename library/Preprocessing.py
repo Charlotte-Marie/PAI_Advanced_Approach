@@ -2,7 +2,7 @@
 """
 The script defines customized classes and functions used for preprocessing.
 
-@author: charl
+@author: Charlotte Meinke, Silvan Hornstein, Rebecca Delfendahl, Till Adam & Kevin Hilbert
 """
 
 # %% Import functions

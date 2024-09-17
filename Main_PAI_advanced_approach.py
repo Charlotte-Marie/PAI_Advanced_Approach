@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created in February 2024
-by authors Charlotte Meinke, Kevin Hilbert & Silvan Hornstein
+by authors Charlotte Meinke, Silvan Hornstein, Rebecca Delfendahl, Till Adam & Kevin Hilbert
 """
 
 # %% Import packages

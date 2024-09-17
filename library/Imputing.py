@@ -2,7 +2,7 @@
 """
 Created on Thu Dec  7 17:08:02 2023
 
-@author: charl
+@author: Charlotte Meinke, Silvan Hornstein, Rebecca Delfendahl, Till Adam & Kevin Hilbert
 """
 # %% Import packages
 import numpy as np

@@ -2,7 +2,7 @@
 """
 This script create a simple graphical user interface for running the Main script.
 
-@author: charl
+@author: Charlotte Meinke, Silvan Hornstein, Rebecca Delfendahl, Till Adam & Kevin Hilbert
 """
 import os
 import tkinter as tk

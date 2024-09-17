@@ -2,7 +2,7 @@
 """
 Scaling
 
-@author: charl
+@author: Charlotte Meinke, Silvan Hornstein, Rebecca Delfendahl, Till Adam & Kevin Hilbert
 """
 
 # %% Import Packages

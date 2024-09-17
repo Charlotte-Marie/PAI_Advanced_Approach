@@ -2,7 +2,7 @@
 """
 Created on Fri Sep 13 15:35:04 2024
 
-@author: meinkcha
+@author: Charlotte Meinke, Silvan Hornstein, Rebecca Delfendahl, Till Adam & Kevin Hilbert
 """
 
 # %% Import packages

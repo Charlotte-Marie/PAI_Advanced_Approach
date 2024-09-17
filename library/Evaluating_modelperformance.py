@@ -2,7 +2,7 @@
 """
 The script defines customized functions and classes for modelperformance evaluation.
 
-@author: charl
+@author: Charlotte Meinke, Silvan Hornstein, Rebecca Delfendahl, Till Adam & Kevin Hilbert
 """
 
 # %% Import packages

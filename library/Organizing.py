@@ -2,7 +2,7 @@
 """
 This script defines functions to organize the folder structure.
 
-@author: charl
+@author: Charlotte Meinke, Silvan Hornstein, Rebecca Delfendahl, Till Adam & Kevin Hilbert
 """
 
 # %% Import functions

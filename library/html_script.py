@@ -1,7 +1,7 @@
 """
 The script creates a nice htlm-output from the results of the script "Main_PAI_advanced_approach.py"
 
-@author: Till Adam, Rebecca Delfendahl, Charlotte Meinke
+@author: Till Adam, Rebecca Delfendahl, Charlotte Meinke, Silvan Hornstein & Kevin Hilbert
 """
 
 # %% Import packages
